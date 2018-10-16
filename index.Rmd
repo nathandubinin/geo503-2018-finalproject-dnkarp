@@ -1,5 +1,5 @@
 ---
-title: "I have the best titles"
+title: "This my website, woot"
 author: Your name here
 subtitle: Subtitle here if desired
 ---
