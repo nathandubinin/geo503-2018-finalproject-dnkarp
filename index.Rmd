@@ -1,5 +1,5 @@
 ---
-title: "This my website, woot"
+title: "This my website -- new title"
 author: Your name here
 subtitle: Subtitle here if desired
 ---
