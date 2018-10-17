@@ -1,8 +1,18 @@
-title: "R Data Science Final Project"
+title: "R Data Science Fall 2018"
 type: inverse
 left:
   - text: "Home"
     href: index.html
+  - text: "Final Project"
+    href: project.html
+  - text: "Proposal"
+    href: proposal.html
+  - text: "Data"
+    href: data.html
+  - text: "Resources"
+    href: resources.html
+  - text: "Contact"
+    href: contact.html
 right:
   - icon: fa-github fa-lg
-    href: https://github.com/adammwilson/RDataScience
+    href: https://github.com/dnkarp
