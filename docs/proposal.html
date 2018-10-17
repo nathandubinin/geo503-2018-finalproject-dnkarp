@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title></title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 41px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+
+.section h2 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h3 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h4 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h5 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h6 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Data Science Fall 2018</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="project.html">Final Project</a>
+</li>
+<li>
+  <a href="proposal.html">Proposal</a>
+</li>
+<li>
+  <a href="data.html">Data</a>
+</li>
+<li>
+  <a href="resources.html">Resources</a>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dnkarp">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<p>(proposal.Rmd)</p>
+<div id="geo-503-final-project-proposal" class="section level1">
+<h1>GEO 503 Final Project Proposal</h1>
+<div id="david-karp-dnkarpbuffalo.edu-october-9-2018" class="section level3">
+<h3>David Karp (<a href="mailto:dnkarp@buffalo.edu">dnkarp@buffalo.edu</a>) | October 9, 2018</h3>
+</div>
+<div id="introduction-to-problemquestion" class="section level2">
+<h2>Introduction to problem/question</h2>
+<div id="problem-statement" class="section level3">
+<h3>Problem Statement</h3>
+<p>To analyze the characteristic and spatial distribution of Low-income Communities (LICs) (8700 census tracts) recently designated as “Opportunity Zones” (OZones), in order to assess selection criteria, investment potential, and relative ‘need’ within local and regional contexts.</p>
+</div>
+<div id="inspiring-examples" class="section level3">
+<h3>Inspiring Examples</h3>
+<div id="example-1" class="section level5">
+<h5>Example 1</h5>
+<div class="figure">
+<img src="http://r-statistics.co/screenshots/ggplot_masterlist_17.png" />
+
+</div>
+<blockquote>
+<p>This “slope chart” example shows ranked values across two time periods to show change between linked data points. I’m wondering if this could be an interesting way to display local versus area values (point A is an individual census tract value, and point B is the area median for that value). This would allow for showing local geographic context as well as national rankings. To simplify the comparison it would be helpful to group OZone v. non-OZone values by county or metro area. This plot can be created using <code>geom_segment()</code> and <code>geom_vline()</code> in the <code>ggplot2</code> library. <a href="http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html">Source</a></p>
+</blockquote>
+</div>
+<div id="example-2" class="section level5">
+<h5>Example 2</h5>
+<div class="figure">
+<img src="http://r-statistics.co/screenshots/ggplot_masterlist_18.png" />
+
+</div>
+<blockquote>
+<p>This dumbbell chart also shows change over time. To visualize change in area characteristics (e.g. housing development, job growth, demographic shifts). This plot can be created using <code>geom_dumbbell()</code> in the ggplot library with ggalt library extension. <a href="http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html">Source</a></p>
+</blockquote>
+</div>
+<div id="example-3" class="section level5">
+<h5>Example 3</h5>
+<div class="figure">
+<img src="http://media.springernature.com/lw785/springer-static/image/art%3A10.1007%2Fs11053-017-9324-9/MediaObjects/11053_2017_9324_Fig5_HTML.gif" />
+
+</div>
+<blockquote>
+<p>This example set of maps shows a series of cluster analyses, tracking spatial patterns overtime. This could be a great way to visualize whether designated OZone tracts had been changing at a different rate relative to neighboring tracts and LICs. <a href="https://link.springer.com/article/10.1007/s11053-017-9324-9">Source</a></p>
+</blockquote>
+</div>
+<div id="example-4.a" class="section level5">
+<h5>Example 4.a</h5>
+<div class="figure">
+<img src="http://jknightlab.github.io/heatshock/heatshock_analysis_files/figure-html/heatmap-1.png" />
+
+</div>
+<blockquote>
+<p>This heat map is an example of a gene expression analysis, where the rows are individual genes, the columns are individual samples, the intensity of red and blue plot the level of gene expression, and the purple and orange bars are an indicator for sample inclusion in 2 treatment groups. The dendrogram at the top shows clustering (similarity) of samples based on gene expression. I think this could be an interesting way to vizualize regression coefficients across regions and between OZone classifications. This plot can be created using <code>heatmap.2()</code>. <a href="http://jknightlab.github.io/heatshock/">Source</a></p>
+</blockquote>
+</div>
+<div id="example-4.b" class="section level5">
+<h5>Example 4.b</h5>
+<div class="figure">
+<img src="https://rlbarter.github.io/superheat/superheat-vignette_files/figure-html/unnamed-chunk-31-1.png" />
+
+</div>
+<blockquote>
+<p>This is another example of the heatmap using the <code>superheat</code> package. It allows for pairing additional plots on the top and sides. With this format, I could potentially add visualizations of national and regional trends. <a href="http://blog.revolutionanalytics.com/2017/02/superheat-supercharged-heatmaps-for-r.html">Source</a></p>
+</blockquote>
+</div>
+</div>
+<div id="proposed-data-sources" class="section level3">
+<h3>Proposed data sources</h3>
+<div id="opportunity-zones" class="section level5">
+<h5>Opportunity Zones</h5>
+<ul>
+<li>source: US Treasury</li>
+<li>link: <a href="https://www.cdfifund.gov/Pages/Opportunity-Zones.aspx">Opportunity Zones Resources</a></li>
+<li>timeframe: 2018</li>
+<li>geography: census tract</li>
+<li>indicators: <code>Eligible census tracts</code> <code>Approved designated census tracts</code></li>
+</ul>
+</div>
+<div id="community-characteristics" class="section level5">
+<h5>Community characteristics</h5>
+<ul>
+<li>source: American Community Survey Summary File (US Census)</li>
+<li>link: <a href="https://www.census.gov/programs-surveys/acs/data/summary-file.html">American Community Survey Summary File Data</a></li>
+<li>timeframe: annual 2010-2016 (5-year estimates)</li>
+<li>geography: tract, zip code, country</li>
+<li>indicators: <code>demographics (age, sex, race, ethnicity, citizenship)</code> <code>socioeconomic (education, income)</code> <code>households (size, family type)</code> <code>housing (% urban, housing type, year built, vacancy)</code></li>
+</ul>
+</div>
+<div id="real-estate-development" class="section level5">
+<h5>Real estate development</h5>
+<ul>
+<li>source: Building Permits Survey (US Census)</li>
+<li>link: <a href="https://www.census.gov/construction/bps/">Building Permits Survey</a></li>
+<li>timeframe: annual 2000-2017; monthly 2000-2018</li>
+<li>geography: country</li>
+<li>indicators: <code>number of new housing units authorized by building permits</code></li>
+</ul>
+</div>
+<div id="economic-growth-indicators" class="section level5">
+<h5>Economic growth indicators</h5>
+<ul>
+<li>source: County Business Patterns (US Census)</li>
+<li>link: <a href="https://www.census.gov/programs-surveys/cbp.html">County Business Patterns (CBP)</a></li>
+<li>timeframe: 2004-2018</li>
+<li>geography: ZIP code, county</li>
+<li>indicators: <code>Business Patterns by Firm Employment Size &amp; Class</code></li>
+</ul>
+</div>
+<div id="housing-affordability" class="section level5">
+<h5>Housing affordability</h5>
+<ul>
+<li>source: Zillow</li>
+<li>link: <a href="https://www.zillow.com/research/data/">Data - Zillow Research</a></li>
+<li>timeframe: annual 2010-2016</li>
+<li>geographies: zip code, country</li>
+<li>indicators: <code>Zillow sales price</code> <code>Zillow rental price</code></li>
+</ul>
+</div>
+</div>
+<div id="proposed-methods" class="section level3">
+<h3>Proposed methods</h3>
+<div id="part-1-data-wrangling" class="section level5">
+<h5>Part 1: Data Wrangling</h5>
+<ul>
+<li>step 1.1: use <code>tidyverse</code> to clean and structure census tract, ZIP code, and county level data sets</li>
+<li>step 1.2: use <code>sf</code> to build spatial features dataset linking attribute table from step 1</li>
+</ul>
+</div>
+<div id="part-2-descriptive-and-comparative-analysis" class="section level5">
+<h5>Part 2: Descriptive and Comparative Analysis</h5>
+<ul>
+<li>step 2.1: use <code>ggplot2</code> to produce series of descriptive / summary statistics, charts, plots, including various subgroup comparison</li>
+<li>step 2.2: use <code>sf</code> to conduct a spatial analysis to obtain local area statistics (neighboring census tracts)</li>
+<li>step 2.3: use <code>stats</code> functions (2-sample tests of independence, <code>t.test</code> <code>chisq.test</code> <code>kruskal.test</code>) to run univariate comparisons between groups of census tracts</li>
+</ul>
+</div>
+<div id="part-3-spatial-analysis" class="section level5">
+<h5>Part 3: Spatial Analysis</h5>
+<ul>
+<li>step 3.1: use <code>spdep</code> to runs local moran’s test (univariate spatial autocorrelation) and identify designated LICs that are clustered or outliers among neighboring LICs</li>
+</ul>
+</div>
+<div id="part-4-regression-analysis" class="section level5">
+<h5>Part 4: Regression Analysis</h5>
+<ul>
+<li>step 4.1: use <code>glm</code> to test a logistic regression model to estimate factors contributing to opportunity zone designation</li>
+<li>step 4.2: use <code>rspatial</code> to test a spatial regression model to estimate local dependencies</li>
+</ul>
+</div>
+<div id="part-5-trend-analysis" class="section level5">
+<h5>Part 5: Trend Analysis</h5>
+<ul>
+<li>step 5.1: use <code>superheat</code> to identify variation in contributing factors across regions (urban/rural, cities, metros, counties, states)</li>
+</ul>
+</div>
+</div>
+<div id="expected-results" class="section level3">
+<h3>Expected results</h3>
+<ul>
+<li>map of characteristic factors and OZone classification (part 1)</li>
+<li>a series of descriptive figures (part 2)
+<ul>
+<li>to build on general summary compiled by the <a href="https://eig.org/news/opportunity-zones-map-comes-focus">Economic Innovation Group</a></li>
+</ul></li>
+<li>table of results from univariate analysis (part 2)</li>
+<li>map of resulting spatial clusters and OZone classification (part 3)</li>
+<li>summary of logistic model (part 4)</li>
+<li>summary of spatial model (part 4)</li>
+<li>summary report of variability in selection decisions by sub-class (part 5)</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- give the footer some space -->
+<br/>
+<br/>
+
+<footer id="site-footer">
+  <div id="footer1">
+  This website is a project for Adam Wilson's <a href="http://www.adamwilson.us/RDataScience"><i> Spatial Data Science (GEO503) </i></a>Course at the University at Buffalo
+  </div>
+  <div id="footer2">
+  <a rel="license" property="http://creativecommons.org/ns#license"
+  href="http://creativecommons.org/licenses/by/4.0/" ><img src="img/cc-by.svg" alt="cc-by"/></a> 
+  </div>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>

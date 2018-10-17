@@ -1,0 +1,53 @@
+---
+title: "Data Sources"
+---
+
+##### Opportunity Zones
+ 
+* source: US Treasury
+* link: [Opportunity Zones Resources](https://www.cdfifund.gov/Pages/Opportunity-Zones.aspx)
+* timeframe: 2018
+* geography: census tract
+* indicators:
+  `Eligible census tracts`
+	`Approved designated census tracts`
+		
+#####  Community characteristics 
+ 
+* source: American Community Survey Summary File (US Census)
+* link: [American Community Survey Summary File Data](https://www.census.gov/programs-surveys/acs/data/summary-file.html)
+* timeframe: annual 2010-2016 (5-year estimates)
+* geography: tract, zip code, country
+* indicators:
+	`demographics (age, sex, race, ethnicity, citizenship)`
+	`socioeconomic (education, income)`
+	`households (size, family type)`
+	`housing (% urban, housing type, year built, vacancy)`
+			
+#####  Real estate development
+ 
+* source: Building Permits Survey (US Census)
+* link: [Building Permits Survey](https://www.census.gov/construction/bps/)
+* timeframe: annual 2000-2017; monthly 2000-2018
+* geography: country
+* indicators:
+	`number of new housing units authorized by building permits`
+			
+#####  Economic growth indicators
+ 
+* source: County Business Patterns (US Census)
+* link: [County Business Patterns (CBP)](https://www.census.gov/programs-surveys/cbp.html)
+* timeframe: 2004-2018
+* geography: ZIP code, county
+* indicators:
+	`Business Patterns by Firm Employment Size & Class`
+			
+#####  Housing affordability
+ 
+* source: Zillow
+* link: [Data - Zillow Research](https://www.zillow.com/research/data/)
+* timeframe: annual 2010-2016
+* geographies: zip code, country
+* indicators:
+	`Zillow sales price`
+	`Zillow rental price`

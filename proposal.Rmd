@@ -1,0 +1,130 @@
+(`r knitr::current_input()`)
+
+# GEO 503 Final Project Proposal
+### David Karp (dnkarp@buffalo.edu)  |  October 9, 2018 
+
+## Introduction to problem/question
+  
+### Problem Statement
+To analyze the characteristic and spatial distribution of Low-income Communities (LICs) (8700 census tracts) recently designated as "Opportunity Zones" (OZones), in order to assess selection criteria, investment potential, and relative 'need' within local and regional contexts.
+
+### Inspiring Examples
+
+##### Example 1
+![](http://r-statistics.co/screenshots/ggplot_masterlist_17.png)
+
+> This "slope chart" example shows ranked values across two time periods to show change between linked data points. I'm wondering if this could be an interesting way to display local versus area values (point A is an individual census tract value, and point B is the area median for that value).  This would allow for showing local geographic context as well as national rankings. To simplify the comparison it would be helpful to group OZone v. non-OZone values by county or metro area.  This plot can be created using `geom_segment()` and `geom_vline()` in the `ggplot2` library.  [Source](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+
+
+
+##### Example 2
+![](http://r-statistics.co/screenshots/ggplot_masterlist_18.png)
+
+> This dumbbell chart also shows change over time. To visualize change in area characteristics (e.g. housing development, job growth, demographic shifts). This plot can be created using `geom_dumbbell()` in the ggplot library with ggalt library extension. [Source](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+
+
+##### Example 3
+![](http://media.springernature.com/lw785/springer-static/image/art%3A10.1007%2Fs11053-017-9324-9/MediaObjects/11053_2017_9324_Fig5_HTML.gif)
+
+> This example set of maps shows a series of cluster analyses, tracking spatial patterns overtime.  This could be a great way to visualize whether designated OZone tracts had been changing at a different rate relative to neighboring tracts and LICs. [Source](https://link.springer.com/article/10.1007/s11053-017-9324-9)
+
+##### Example 4.a
+![](http://jknightlab.github.io/heatshock/heatshock_analysis_files/figure-html/heatmap-1.png)
+
+> This heat map is an example of a gene expression analysis, where the rows are individual genes, the columns are individual samples, the intensity of red and blue plot the level of gene expression, and the purple and orange bars are an indicator for sample inclusion in 2 treatment groups. The dendrogram at the top shows clustering (similarity) of samples based on gene expression.  I think this could be an interesting way to vizualize regression coefficients across regions and between OZone classifications. This plot can be created using `heatmap.2()`. [Source](http://jknightlab.github.io/heatshock/)
+
+
+##### Example 4.b
+![](https://rlbarter.github.io/superheat/superheat-vignette_files/figure-html/unnamed-chunk-31-1.png)
+
+> This is another example of the heatmap using the `superheat` package. It allows for pairing additional plots on the top and sides.  With this format, I could potentially add visualizations of national and regional trends. [Source](http://blog.revolutionanalytics.com/2017/02/superheat-supercharged-heatmaps-for-r.html)
+
+### Proposed data sources
+
+##### Opportunity Zones
+ 
+* source: US Treasury
+* link: [Opportunity Zones Resources](https://www.cdfifund.gov/Pages/Opportunity-Zones.aspx)
+* timeframe: 2018
+* geography: census tract
+* indicators:
+  `Eligible census tracts`
+	`Approved designated census tracts`
+		
+#####  Community characteristics 
+ 
+* source: American Community Survey Summary File (US Census)
+* link: [American Community Survey Summary File Data](https://www.census.gov/programs-surveys/acs/data/summary-file.html)
+* timeframe: annual 2010-2016 (5-year estimates)
+* geography: tract, zip code, country
+* indicators:
+	`demographics (age, sex, race, ethnicity, citizenship)`
+	`socioeconomic (education, income)`
+	`households (size, family type)`
+	`housing (% urban, housing type, year built, vacancy)`
+			
+#####  Real estate development
+ 
+* source: Building Permits Survey (US Census)
+* link: [Building Permits Survey](https://www.census.gov/construction/bps/)
+* timeframe: annual 2000-2017; monthly 2000-2018
+* geography: country
+* indicators:
+	`number of new housing units authorized by building permits`
+			
+#####  Economic growth indicators
+ 
+* source: County Business Patterns (US Census)
+* link: [County Business Patterns (CBP)](https://www.census.gov/programs-surveys/cbp.html)
+* timeframe: 2004-2018
+* geography: ZIP code, county
+* indicators:
+	`Business Patterns by Firm Employment Size & Class`
+			
+#####  Housing affordability
+ 
+* source: Zillow
+* link: [Data - Zillow Research](https://www.zillow.com/research/data/)
+* timeframe: annual 2010-2016
+* geographies: zip code, country
+* indicators:
+	`Zillow sales price`
+	`Zillow rental price`
+
+### Proposed methods
+
+##### Part 1: Data Wrangling
+ 
+* step 1.1: use `tidyverse` to clean and structure census tract, ZIP code, and county level data sets
+* step 1.2: use `sf` to build spatial features dataset linking attribute table from step 1
+	
+##### Part 2: Descriptive and Comparative Analysis
+ 
+* step 2.1: use `ggplot2` to produce series of descriptive / summary statistics, charts, plots, including various subgroup comparison
+* step 2.2: use `sf` to conduct a spatial analysis to obtain local area statistics (neighboring census tracts)
+* step 2.3: use `stats` functions (2-sample tests of independence, `t.test` `chisq.test` `kruskal.test`) to run univariate comparisons between groups of census tracts
+
+##### Part 3: Spatial Analysis
+
+* step 3.1: use `spdep` to runs local moran's test (univariate spatial autocorrelation) and identify designated LICs that are clustered or outliers among neighboring LICs
+
+##### Part 4: Regression Analysis
+
+* step 4.1: use `glm` to test a logistic regression model to estimate factors contributing to opportunity zone designation
+* step 4.2: use `rspatial` to test a spatial regression model to estimate local dependencies
+
+##### Part 5: Trend Analysis
+ 
+* step 5.1: use `superheat` to identify variation in contributing factors across regions (urban/rural, cities, metros, counties, states) 
+	
+### Expected results
+
+* map of characteristic factors and OZone classification (part 1)
+* a series of descriptive figures (part 2)
+    + to build on general summary compiled by the [Economic Innovation Group](https://eig.org/news/opportunity-zones-map-comes-focus)
+* table of results from univariate analysis (part 2)
+* map of resulting spatial clusters and OZone classification (part 3)
+* summary of logistic model (part 4)
+* summary of spatial model (part 4)
+* summary report of variability in selection decisions by sub-class (part 5)
+	
