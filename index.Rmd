@@ -9,7 +9,3 @@ output: pdf_document
   
 ### Problem Statement
 To analyze the characteristic and spatial distribution of Low-income Communities (LICs) (8700 census tracts) recently designated as "Opportunity Zones" (OZones), in order to assess selection criteria, investment potential, and relative 'need' within local and regional contexts.
-
-#### This is a test
-
-
