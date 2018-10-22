@@ -1,12 +1,15 @@
 ---
 title: "GEO 503 Final Project [WORKING SITE]"
-author: David N. Karp (dnkarp@buffalo.edu)
+author: "David N. Karp (dnkarp@buffalo.edu)"
 subtitle: GEO 503 Final Project | Fall 2018
+output: pdf_document
 ---
 
 ## Project Proposal
   
 ### Problem Statement
 To analyze the characteristic and spatial distribution of Low-income Communities (LICs) (8700 census tracts) recently designated as "Opportunity Zones" (OZones), in order to assess selection criteria, investment potential, and relative 'need' within local and regional contexts.
+
+#### This is a test
 
 
