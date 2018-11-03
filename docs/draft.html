@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="dnkarp" />
+
+<meta name="date" content="2018-11-02" />
+
+<title>finalproject_dnkarp</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 41px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+
+.section h2 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h3 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h4 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h5 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h6 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Data Science Fall 2018</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Project
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="proposal.html">Proposal</a>
+    </li>
+    <li>
+      <a href="draft.html">First Draft</a>
+    </li>
+    <li>
+      <a href="project.html">Final Project</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="data.html">Data</a>
+</li>
+<li>
+  <a href="resources.html">Resources</a>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dnkarp">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">finalproject_dnkarp</h1>
+<h4 class="author"><em>dnkarp</em></h4>
+<h4 class="date"><em>11/02/2018</em></h4>
+
+</div>
+
+
+<div id="section" class="section level1">
+<h1>————————————————————–</h1>
+<p>“Social impact could include, but not limited to; workforce education/development, workforce diversity, neighborhood revitalization, health and environment friendly and job creation.” - WNY Impact Investment Fund</p>
+<p>RULE: a low-income community census tract has an individual poverty rate of at least 20% and median family income up to 80% percent of the area median. Every state or territory can designate up to 25% of its census tracts that meet qualification requirements</p>
+<p>EXCEPTION: 5% of census tracts that do not meet the definition of a low-income community can be designated under an exemption. Exempt census tracts must be contiguous with low-income community census tracts that are designated as Opportunity Zones, and the median family income of the exempt tract must not exceed 125% of the median family income of the designated low-income community census tract with which it is contiguous.</p>
+<p>DEFINITIONS: low-income community 45d(e) [American Jobs Creation Act of 2004, IRC §45D(e)(2)] A “low-income community” is defined as any population census tract where the - poverty rate for such tract is at least 20% - or, in the case of a tract not located within a metropolitan area, median family income for such tract does not exceed 80 of statewide median family income, - or, in the case of a tract located within a metropolitan area, the median family income for such tract does not exceed 80% of the greater of statewide median family income or the metropolitan area median family income.</p>
+<hr />
+<p>exploring social impact investments – how many CDFIs, CDEs, CDCs are opporating in the ‘region’… NMTCs? number of impact funds? indicators of: workforce education/development, workforce diversity, neighborhood revitalization, health and environment friendly, and job creation.</p>
+<p>bond issuance?</p>
+</div>
+<div id="section-1" class="section level1">
+<h1>————————————————————–</h1>
+<div id="set-up" class="section level3">
+<h3>0.Set-up</h3>
+</div>
+</div>
+<div id="section-2" class="section level1">
+<h1>————————————————————–</h1>
+<div id="load-libraries" class="section level3">
+<h3>1.Load libraries</h3>
+<pre class="r"><code>#install.packages(c(&quot;tidyverse&quot;, &quot;broom&quot;, &quot;data.table&quot;, &quot;purrr&quot;, &quot;stringr&quot;, &quot;readxl&quot;, &quot;skimr&quot;, &quot;units&quot;, &quot;sf&quot;, &quot;maps&quot;, &quot;albersusa&quot;, &quot;tidycensus&quot;, &quot;tigris&quot;, &quot;viridis&quot;, &quot;gridExtra&quot;, &quot;ggthemes&quot;, &quot;cowplot&quot;, &quot;tableone&quot;, &quot;ggpubr&quot;))
+
+# data wrangling libs
+library(tidyverse)
+library(broom)
+library(data.table)
+library(purrr)
+library(stringr)
+library(readxl)
+
+# data analysis
+library(skimr)
+library(units)
+library(tableone)
+
+# spatial libs
+library(sf)
+library(maps)
+library(albersusa)
+
+# census data libs + install api key
+library(tidycensus)
+library(tigris)
+options(tigris_use_cache = TRUE)
+
+# graphics/viz libs
+library(viridis)
+library(gridExtra)
+library(ggthemes)
+library(cowplot)
+library(ggpubr)</code></pre>
+</div>
+<div id="load-data" class="section level3">
+<h3>2.Load data</h3>
+<div id="a.load-list-of-designated-opportunity-zones-from-csv-file" class="section level5">
+<h5>2a.Load list of designated ‘Opportunity Zones’ from csv file</h5>
+<pre class="r"><code># A list of US census tracts that are designated &quot;Opportunity Zones&quot; is available as csv(source: CDFI Fund[https://www.cdfifund.gov/Pages/Opportunity-Zones.aspx]); csv, tract-level data, entire US, n = 74134
+
+# check is csv exists in data folder; if not, download and extract
+if(!file.exists(&quot;data/Opportunity Zones.csv&quot;)){
+# set URL of data source
+data.url &lt;- &quot;https://www.cdfifund.gov/Documents/Opportunity%20Zones2.zip&quot;
+# set file path
+data.file &lt;- &#39;data/ozone_data_from_cdfifund.zip&#39;
+# download data to local directory
+download.file(data.url,data.file, method=&#39;curl&#39;)
+# unzip archived file
+unzip(data.file, exdir = &quot;data&quot;, files = c(&quot;Opportunity Zones.csv&quot;), overwrite = TRUE)
+}
+
+# load csv into data frame
+ozones.raw &lt;- read_csv(&quot;data/Opportunity Zones.csv&quot;)</code></pre>
+</div>
+<div id="b.clean-opportunity-zones-ozone-data-frame" class="section level5">
+<h5>2b.Clean ‘Opportunity Zones’ (OZone) data frame</h5>
+<pre class="r"><code># get list of state postal codes (2-letter abbreviations), assign a state/territory flag
+# create a logical vector, true for 50 states +DC; false for territories (PR - Puerto Rico, VI - US Vir Islands, GU - Guam, MP - N.Mariana, UM - Minor Outlying, AS - Am Samoa)
+stab &lt;- rbind(
+   cbind(state=c(unique(fips_codes$state)[1:51]),is.state=as.logical(T))
+  ,cbind(state=c(unique(fips_codes$state)[52:57]),is.state=as.logical(F))
+)
+
+# add state letter codes, and state/territory flag to ozone tract-level data;  
+ozones &lt;- ozones.raw %&gt;% 
+  mutate(&quot;state_code&quot;=substr(ozones.raw$GEOID10,1,2)) %&gt;% #extract 2-digit state FIPS codes from 11-digit tract FIPS
+  merge(data.frame(unique(fips_codes[,1:2])),by=&quot;state_code&quot;) %&gt;% #merge (left join) state letter codes based on FIPS codes
+  merge(stab,by=&quot;state&quot;) #merge state/territory logic flag
+
+# set ozone datsframe as datatable
+setDT(ozones)
+
+# subset ozone data into 50+DC and territories
+ozones.51 &lt;- ozones[as.logical(is.state),]
+ozones.terr &lt;- ozones[!as.logical(is.state),]</code></pre>
+</div>
+<div id="c.load-spatial-features-data-from-acs" class="section level5">
+<h5>2c.Load spatial features data from ACS</h5>
+<pre class="r"><code># TRACT-level data
+# check is RDS file exists in data folder; if not, download
+if(!file.exists(&quot;data/ustracts_sf.rds&quot;)){
+# download census tract boundaries (with population data, 2016) using tidycensus; get per state and bind
+ustracts_sf &lt;- reduce( #can only request tracts per state, so it&#39;s necessary to loop through each state
+  purrr::map(stab[stab[,2]==T,1], function(x) { #loop through statelist, for &#39;states&#39; only (exclude territories) 
+    get_acs(geography = &quot;tract&quot;, variables = &quot;B01003_001&quot;, #include population variable -- `get_acs` requires at least 1 var
+            state = x, geometry = TRUE) # include geometries
+  }), 
+  rbind #bind (stack rows) into complete data frame
+)
+# Save a sf object to a file
+saveRDS(ustracts_sf, &quot;data/ustracts_sf.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;ustracts_sf&quot;)){
+ustracts_sf &lt;- readRDS(&quot;data/ustracts_sf.rds&quot;)
+}
+
+# COUNTY-level data
+# check is RDS file exists in data folder; if not, download
+if(!file.exists(&quot;data/uscounties_sf.rds&quot;)){
+# get counties (filter out Puerto Rico)
+uscounties_sf &lt;- get_acs(geography = &quot;county&quot;, variables = &quot;B01003_001&quot;, geometry = TRUE) %&gt;% filter(substr(GEOID,1,2)!=&quot;72&quot;)
+# Save a sf object to a file
+saveRDS(uscounties_sf, &quot;data/uscounties_sf.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;uscounties_sf&quot;)){
+uscounties_sf &lt;- readRDS(&quot;data/uscounties_sf.rds&quot;)
+}
+
+# STATE-level data
+# check is RDS file exists in data folder; if not, download
+if(!file.exists(&quot;data/usstates_sf.rds&quot;)){
+# get states (filter Puerto Rico)
+usstates_sf &lt;- get_acs(geography = &quot;state&quot;, variables = &quot;B01003_001&quot;, geometry = TRUE) %&gt;% filter(GEOID!=&quot;72&quot;)
+# Save a sf object to a file
+saveRDS(usstates_sf, &quot;data/usstates_sf.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;usstates_sf&quot;)){
+usstates_sf &lt;- readRDS(&quot;data/usstates_sf.rds&quot;)
+}</code></pre>
+</div>
+<div id="d.clean-spatial-features-data" class="section level5">
+<h5>2d.Clean spatial features data</h5>
+<pre class="r"><code># reproject to albers &amp; drop hawaii and alaska (for now; look into moving HI &amp; AK for single layout)
+lower48 &lt;- data.frame(state_code=unique(fips_codes$state_code)) %&gt;% #get vector of FIPS codes 
+  filter(!(state_code %in% c(&quot;02&quot;,&quot;15&quot;,&quot;60&quot;, &quot;66&quot;, &quot;69&quot;, &quot;72&quot;, &quot;74&quot;, &quot;78&quot;))) %&gt;% #exclude territories and HI/AK
+  mutate(state_code=as.character(state_code)) %&gt;% #set numeric FIPS code as character
+  .[[1]] #convert dataframe to character vector 
+
+# define function to filter by lower48 &amp; reproject to albers
+prj.alb.48 &lt;- function(x){x %&gt;% 
+    filter(substr(GEOID,1,2) %in% lower48) %&gt;% 
+    st_transform(us_laea_proj)}
+
+# filter/repoject tracts
+ustracts_sf.48.albers &lt;- prj.alb.48(ustracts_sf)
+# filter/repoject counties
+uscounties_sf.48.albers &lt;- prj.alb.48(uscounties_sf)
+# filter/repoject states
+usstates_sf.48.albers &lt;- prj.alb.48(usstates_sf)</code></pre>
+</div>
+<div id="e.load-new-market-tax-credit-nmtc-data" class="section level5">
+<h5>2e.Load New Market Tax Credit (NMTC) data</h5>
+<pre class="r"><code># A list of NMTC investment projects, including date, location, project info; source: CDFI Fund, NMTC Public Data Release: 2003-2015 Data File [https://www.cdfifund.gov/news-events/news/Pages/news-detail.aspx?NewsID=270&amp;Category=Press%20Releases]
+
+# check is csv exists in data folder; if not, download and load
+if(!file.exists(&quot;data/FY 2017 NMTC Public Data Release_v2.xlsx&quot;)){
+# set URL of data source
+data.url &lt;- &#39;https://www.cdfifund.gov/Documents/FY%202017%20NMTC%20Public%20Data%20Release_v2.xlsx&#39;
+# set file path
+data.file &lt;- &#39;data/FY 2017 NMTC Public Data Release_v2.xlsx&#39;
+# download data to local directory
+download.file(data.url,data.file, method=&#39;curl&#39;)
+}
+
+# import from excel doc
+nmtc.raw &lt;- read_excel(&#39;data/FY 2017 NMTC Public Data Release_v2.xlsx&#39;, sheet = 3)
+
+# clean &amp; format data
+nmtc &lt;- nmtc.raw %&gt;% 
+  mutate(GEOID = str_pad(`2010 Census Tract`, width=11, side=&quot;left&quot;, pad=&quot;0&quot;)) %&gt;% 
+  mutate(metro = as.factor(`Metro/Non-Metro, 2010 Census`)) %&gt;% 
+  mutate(cde = as.factor(`Community Development Entity (CDE) Name`)) %&gt;% 
+  mutate(type = as.factor(`QALICB Type`)) %&gt;% 
+  mutate(year = `Origination Year`) %&gt;% 
+  mutate(qlici.amount = `Project QLICI Amount`) %&gt;% 
+  mutate(total.cost = `Estimated Total Project Cost`) %&gt;% 
+  select(GEOID, metro, cde, type, year, qlici.amount, total.cost)
+
+# summarize data from project level to census tract, create summary variables
+nmtc.tract &lt;- nmtc %&gt;%
+  group_by(GEOID, type) %&gt;% 
+  mutate(one = 1) %&gt;% 
+  summarize(one = sum(one)) %&gt;% 
+  spread(type, one) %&gt;% 
+  group_by(GEOID) %&gt;% 
+  summarise_all(funs(sum))
+
+nmtc.tract &lt;- nmtc %&gt;% 
+  group_by(GEOID) %&gt;% 
+  summarize(metro = first(metro), 
+            n.cde = length(unique(cde)), 
+            n.prj = n(), 
+            avg.prj.yr = n()/length(unique(year)), 
+            ttl.amt.prj = sum(qlici.amount), 
+            avg.amt.prj = mean(qlici.amount), 
+            avg.amt.yr = sum(qlici.amount)/length(unique(year))) %&gt;%
+  merge(nmtc.tract, by=&quot;GEOID&quot;)</code></pre>
+</div>
+<div id="f.load-regional-characteristics-acs-variables" class="section level5">
+<h5>2f.Load regional characteristics (ACS variables)</h5>
+<pre class="r"><code># load variables (2016 5-year estimates)
+v16 &lt;- load_variables(2016, &quot;acs5&quot;, cache = TRUE)
+if(F){ # this can be used as a look up
+  v16 %&gt;% select(name, label) %&gt;% filter(grepl(&quot;19113&quot;, name))
+  v16 %&gt;% select(name, label) %&gt;% filter(grepl(&quot;Poverty&quot;, label))
+}
+
+## DEFINE VARIABLE SELECTION ##
+
+# Population Variables
+# TotalPopulation[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;var=B01003001]
+totpop_var &lt;- cbind(c(&quot;B01003_001&quot;),c(&quot;TotPop&quot;))
+
+# Income Variables
+# BelowPoverty[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;var=B17001002]
+# MedianFamilyIncome[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;var=B19113001]
+povinc_var &lt;- cbind(
+  c(&quot;B17001_001&quot;,&quot;B17001_002&quot;,&quot;B19113_001&quot;),
+  c(&quot;PovPopDenominator&quot;,&quot;BelowPov&quot;,&quot;MdnFamInc&quot;)
+  )
+
+# Race/Ethnicity Variables
+# Race[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;table=B02001]
+race_var &lt;- cbind(
+  c(&quot;B02001_002&quot;,&quot;B02001_003&quot;,&quot;B02001_004&quot;,&quot;B02001_005&quot;,&quot;B02001_006&quot;),
+  c(&quot;White&quot;,&quot;Black&quot;,&quot;NatAm&quot;,&quot;Asian&quot;,&quot;NatIsl&quot;)
+  )
+
+# Socioeconomic Variables 
+# Education[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;table=B15003]
+# Employment[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;table=B23025]
+# Housing1[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;table=B25002]
+# Housing2[https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&amp;table=B25003]
+socioecon_var &lt;- cbind(
+  c(&quot;B15003_001&quot;, &quot;B15003_017&quot;, &quot;B15003_018&quot;, &quot;B15003_019&quot;,&quot;B15003_020&quot;, &quot;B15003_021&quot;,&quot;B15003_022&quot;,&quot;B15003_023&quot;,&quot;B15003_024&quot;, &quot;B15003_025&quot;, &quot;B23025_003&quot;, &quot;B23025_005&quot;, &quot;B25002_001&quot;, &quot;B25002_003&quot;, &quot;B25003_001&quot;, &quot;B25003_003&quot;),
+  c(&quot;Pop25&quot;, &quot;HS&quot;, &quot;GED&quot;, &quot;CollegeNoDegree0&quot;, &quot;CollegeNoDegree1&quot;, &quot;AssocDegree&quot;, &quot;BachDegree&quot;, &quot;MastDegree&quot;, &quot;ProfDegree&quot;, &quot;DoctDegree&quot;, &quot;CivLabor&quot;, &quot;Unempl&quot;, &quot;HousingUnits&quot;, &quot;Vacant&quot;, &quot;OccUnits&quot;, &quot;OccRental&quot; )
+  )
+
+# Zip code and County level data
+# commerical development, jobs, industry, GDP??
+# urban: urban/suburban/rural/metro-region
+# health: diabetes, obesity, substance abuse, chronic
+# buit environment: parks, rec centers, health clinics, civic inst?
+# real estate: property value? (Zillow)
+
+# merge variable name vectors into dataframe
+select_vars &lt;- rbind(totpop_var, povinc_var, race_var, socioecon_var) %&gt;% 
+  data.frame() %&gt;% 
+  rename(variable = X1, v = X2) %&gt;% 
+  mutate(variable = as.character(variable))
+
+# get statelist vector 
+statelist &lt;- stab[stab[,2]==T,1]
+
+## GET DATA ##
+
+# Get TRACT-level data
+if(!file.exists(&quot;data/ustrctsacs16_df.rds&quot;)){
+# get 2016 data
+us.trcts.acs16 &lt;- reduce(
+  purrr::map(statelist, function(x) { # loop through statelist
+    get_acs(geography = &quot;tract&quot;, year = 2016, variables = select_vars[,1], # get tract level data for 2016
+            state = x, geometry = F) # pull for each state, x, do not include geometry
+  }), 
+  rbind # bind tracts for each state into one data frame
+)
+# Save a sf object to a file
+saveRDS(us.trcts.acs16, &quot;data/ustrctsacs16_df.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;us.trcts.acs16&quot;)){
+us.trcts.acs16 &lt;- readRDS(&quot;data/ustrctsacs16_df.rds&quot;)
+}
+
+if(!file.exists(&quot;data/ustrctsacs15_df.rds&quot;)){
+# get 2015 data (2010 data is available, but returns an error)
+us.trcts.acs15 &lt;- reduce(
+  purrr::map(statelist, function(x) {
+    get_acs(geography = &quot;tract&quot;, year = 2015, variables = select_vars[,1], 
+            state = x, geometry = F)
+  }), 
+  rbind
+)
+# Save a sf object to a file
+saveRDS(us.trcts.acs15, &quot;data/ustrctsacs15_df.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;us.trcts.acs15&quot;)){
+us.trcts.acs15 &lt;- readRDS(&quot;data/ustrctsacs15_df.rds&quot;)
+}
+
+# Get COUNTY-level data
+if(!file.exists(&quot;data/uscntyacs16_df.rds&quot;)){
+# get 2016 data
+us.cnty.acs16 &lt;- get_acs(geography = &quot;county&quot;, year = 2016, variables = select_vars[,1],geometry = F) 
+# Save a sf object to a file
+saveRDS(us.cnty.acs16, &quot;data/uscntyacs16_df.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;us.cnty.acs16&quot;)){
+us.cnty.acs16 &lt;- readRDS(&quot;data/uscntyacs16_df.rds&quot;)
+}
+
+# Get STATE-level data
+if(!file.exists(&quot;data/usstacs16_df.rds&quot;)){
+# get 2016 data
+us.st.acs16 &lt;- get_acs(geography = &quot;state&quot;, year = 2016, variables = select_vars[,1],geometry = F) 
+# Save a sf object to a file
+saveRDS(us.st.acs16, &quot;data/usstacs16_df.rds&quot;)
+}
+
+# check is object exists in environment; if not, reload
+if(!exists(&quot;us.st.acs16&quot;)){
+us.st.acs16 &lt;- readRDS(&quot;data/usstacs16_df.rds&quot;)
+}
+
+## FORMAT DATA ##
+
+# transform long data to wide format
+#TRACT 2016
+us.trcts.acs16.wide &lt;- us.trcts.acs16 %&gt;% 
+  left_join(select_vars, by=&quot;variable&quot;) %&gt;% # join variable names to varible codes
+  select(-c(moe,NAME,variable)) %&gt;% # drop unnecessary vars
+  spread(key = v, value = estimate, sep = &quot;16.&quot;) #use `spread` to generate collumns; add v16. for each variable (year 2016)
+#TRACT 2015
+us.trcts.acs15.wide &lt;- us.trcts.acs15 %&gt;% 
+  left_join(select_vars, by=&quot;variable&quot;) %&gt;% 
+  select(-c(moe,NAME,variable)) %&gt;% 
+  spread(key = v, value = estimate, sep = &quot;15.&quot;) #add v15. for each variable (year 2015)
+#COUNTY
+us.cnty.acs16.wide &lt;- us.cnty.acs16 %&gt;% 
+  left_join(select_vars, by=&quot;variable&quot;) %&gt;% # join variable names to varible codes
+  select(-c(moe,NAME,variable)) %&gt;% # drop unnecessary vars
+  spread(key = v, value = estimate, sep = &quot;16.&quot;) #use `spread` to generate collumns; add v16. for each variable (year 2016)
+#STATE
+us.st.acs16.wide &lt;- us.st.acs16 %&gt;% 
+  left_join(select_vars, by=&quot;variable&quot;) %&gt;% # join variable names to varible codes
+  select(-c(moe,NAME,variable)) %&gt;% # drop unnecessary vars
+  spread(key = v, value = estimate, sep = &quot;16.&quot;) #use `spread` to generate collumns; add v16. for each variable (year 2016)
+
+#----------------------------------
+# merge (left join) 2015 to 2016 tracts
+us.trcts.acs.wide &lt;- merge(us.trcts.acs16.wide,us.trcts.acs15.wide,by=&quot;GEOID&quot;)
+
+# calculate percent change varibles
+us.trcts.acs.chng &lt;- us.trcts.acs.wide %&gt;% mutate(
+  PopChng = ((v16.TotPop - v15.TotPop)/v15.TotPop),
+  PovChng = ((v16.BelowPov - v15.BelowPov)/v15.BelowPov),
+  MdnIncChng = ((v16.MdnFamInc - v15.MdnFamInc)/v15.MdnFamInc),
+  UnemplChng = (((v16.Unempl/v16.CivLabor) - (v15.Unempl/v15.CivLabor))/(v15.Unempl/v15.CivLabor)),
+  VacChng = (((v16.Vacant/v16.HousingUnits) - (v15.Vacant/v15.HousingUnits))/(v15.Vacant/v15.HousingUnits)),
+  RentChng = (((v16.OccRental/v16.OccUnits) - (v15.OccRental/v15.OccUnits))/(v15.OccRental/v15.OccUnits)),
+  GrEduChng = (((v16.MastDegree + v16.DoctDegree)/v16.Pop25) - ((v15.MastDegree + v15.DoctDegree)/v15.Pop25))/((v15.MastDegree + v15.DoctDegree)/v15.Pop25),
+  ColEduChng = ((v16.BachDegree/v16.Pop25) - (v15.BachDegree/v15.Pop25))/(v15.BachDegree/v15.Pop25),
+  RaceChng = ((v16.White/v16.Black) - (v15.White/v15.Black))/(v15.White/v15.Black)
+    ) %&gt;% select(1,50:58)
+
+# calculate single year rate varibles
+us.trcts.acs.rt16 &lt;- us.trcts.acs.wide %&gt;% mutate(
+  Pop = v16.TotPop,
+  PovRt = v16.BelowPov/v16.PovPopDenominator,
+  MdnInc = v16.MdnFamInc,
+  UnemplRt = v16.Unempl/v16.CivLabor,
+  VacRt = v16.Vacant/v16.HousingUnits,
+  RentRt = v16.OccRental/v16.OccUnits,
+  GrEduRt = (v16.MastDegree + v16.DoctDegree)/v16.Pop25,
+  ColEduRt = v16.BachDegree/v16.Pop25,
+  PctWhite = v16.White/v16.TotPop
+    ) %&gt;% select(1,50:58)
+#----------------------------------
+
+# calculate single year rate varibles
+frmt.vars &lt;- function(x){
+  x %&gt;% mutate(
+    Pop = v16.TotPop,
+    PovRt = v16.BelowPov/v16.PovPopDenominator,
+    MdnInc = v16.MdnFamInc,
+    UnemplRt = v16.Unempl/v16.CivLabor,
+    VacRt = v16.Vacant/v16.HousingUnits,
+    RentRt = v16.OccRental/v16.OccUnits,
+    GrEduRt = (v16.MastDegree + v16.DoctDegree)/v16.Pop25,
+    ColEduRt = v16.BachDegree/v16.Pop25,
+    PctWhite = v16.White/v16.TotPop) %&gt;% 
+    select(1,(ncol(.)-8):ncol(.))
+}
+
+# run formating for tracts, county, state dataframes
+us.trcts.acs.rt16 &lt;- us.trcts.acs16.wide %&gt;% frmt.vars()
+us.cnty.acs.rt16 &lt;- us.cnty.acs16.wide %&gt;% frmt.vars()
+us.st.acs.rt16 &lt;- us.st.acs16.wide %&gt;% frmt.vars()</code></pre>
+</div>
+</div>
+<div id="merge-attribute-data-with-spatial-data" class="section level3">
+<h3>3.Merge attribute data with spatial data</h3>
+<pre class="r"><code># merge (left join) &#39;Opportunity Zones&#39; to sf tracts dataframe 
+us.oz.sf &lt;- merge(ustracts_sf.48.albers, ozones.51, by.x = &quot;GEOID&quot;, by.y = &quot;GEOID10&quot;, all.x)
+
+# merge (left join) NMTC data and ACS attributes to Ozone tracts sf df
+us.oz.sf2 &lt;- us.oz.sf %&gt;% 
+  select(-c(variable,estimate,moe)) %&gt;% 
+  merge(nmtc.tract, by=&quot;GEOID&quot;, all.x=T) %&gt;% 
+  merge(us.trcts.acs.chng,by=&quot;GEOID&quot;, all.x=T) #use percent change ACS variables
+
+us.oz.sf3 &lt;- us.oz.sf %&gt;% 
+  select(-c(variable,estimate,moe)) %&gt;% 
+  merge(nmtc.tract, by=&quot;GEOID&quot;, all.x=T) %&gt;% 
+  merge(us.trcts.acs.rt16,by=&quot;GEOID&quot;, all.x=T) %&gt;% #use 2016 rates ACS varaibles
+  mutate(CountyFIPS=substr(GEOID,1,5)) %&gt;% 
+  merge(us.cnty.acs.rt16[,c(&quot;GEOID&quot;,&quot;PovRt&quot;,&quot;MdnInc&quot;)], by.x=&quot;CountyFIPS&quot;,by.y=&quot;GEOID&quot;, all.x=T) %&gt;% 
+  rename(PovRt.trct = PovRt.x) %&gt;% 
+  rename(MdnInc.trct = MdnInc.x) %&gt;% 
+  rename(PovRt.cnty = PovRt.y) %&gt;% 
+  rename(MdnInc.cnty = MdnInc.y) %&gt;% 
+  mutate(StateFIPS=substr(GEOID,1,2)) %&gt;% 
+  merge(us.st.acs.rt16[,c(&quot;GEOID&quot;,&quot;PovRt&quot;,&quot;MdnInc&quot;)], by.x=&quot;StateFIPS&quot;,by.y=&quot;GEOID&quot;, all.x=T) %&gt;% 
+  rename(PovRt.st = PovRt) %&gt;% 
+  rename(MdnInc.st = MdnInc) %&gt;% 
+  mutate(PovRatio.cnty = PovRt.trct/PovRt.cnty) %&gt;% 
+  mutate(PovRatio.st = PovRt.trct/PovRt.st) %&gt;% 
+  mutate(MdnIncRatio.cnty = MdnInc.trct/MdnInc.cnty) %&gt;% 
+  mutate(MdnIncRatio.st = MdnInc.trct/MdnInc.st)</code></pre>
+</div>
+<div id="descriptive-analysis" class="section level3">
+<h3>4.Descriptive analysis</h3>
+<div id="a.national-and-state-distribution" class="section level4">
+<h4>4a.National and State Distribution</h4>
+<pre class="r"><code># two-way table of eligibility and designation
+table(us.oz.sf3$QOZ,us.oz.sf3$TYPE)</code></pre>
+<pre><code>##                
+##                 CONTIGUOUS   LIC    NO
+##   DESIGNATEDQOZ        195  7561    17
+##   NO                 10022 23209 31510</code></pre>
+<pre class="r"><code>prop.table(table(us.oz.sf3$QOZ,us.oz.sf3$TYPE))</code></pre>
+<pre><code>##                
+##                   CONTIGUOUS          LIC           NO
+##   DESIGNATEDQOZ 0.0026891359 0.1042695204 0.0002344375
+##   NO            0.1382077944 0.3200623328 0.4345367791</code></pre>
+<pre class="r"><code># bar chart: state level distribution of tract deisngation/eligibility
+us.oz.sf3 %&gt;% 
+  st_set_geometry(NULL) %&gt;% 
+  mutate(OZ = factor(ifelse(QOZ==&quot;DESIGNATEDQOZ&quot;, &quot;OZone&quot;, ifelse(TYPE==&quot;LIC&quot;, &quot;Non-OZ LIC&quot;, &quot;Non-LIC&quot;)))) %&gt;% 
+  group_by(state) %&gt;% 
+  summarise(n = n(), OZone = sum(OZ == &quot;OZone&quot;)/n,LIC = sum(OZ == &quot;Non-OZ LIC&quot;)/n,NonLIC = sum(OZ == &quot;Non-LIC&quot;)/n) %&gt;% 
+  mutate(state = factor(state, levels = state[order(OZone)])) %&gt;% 
+  gather(key = &quot;OZdesignation&quot;, value = &quot;n.tracts&quot;, OZone, LIC, NonLIC) %&gt;% 
+  ggplot(aes(x = state, y = n.tracts, fill = factor(OZdesignation, levels = c(&quot;NonLIC&quot;,&quot;LIC&quot;,&quot;OZone&quot;)))) + 
+  theme_bw() + geom_bar(stat = &quot;identity&quot;) + 
+  ylab(&quot;% of state tracts&quot;) + 
+  labs(fill = &quot;Census Tract\nEligibility/Designation&quot;) + 
+  scale_fill_manual(values=c(&quot;grey&quot;,&quot;blue&quot;,&quot;dark blue&quot;))</code></pre>
+<p><img src="draft_files/figure-html/4a%20national%20and%20state%20descriptive%20tables/charts-1.png" width="672" /></p>
+</div>
+<div id="b.compare-oz-and-non-oz-lic-pt1" class="section level4">
+<h4>4b.Compare OZ and Non-OZ-LIC pt1</h4>
+<pre class="r"><code># select dataset, and remove geometry (seems to increase processing speed), add area/density variables
+d &lt;- us.oz.sf3 %&gt;% 
+  mutate(area = set_units(st_area(.),mi^2)) %&gt;% 
+  st_set_geometry(NULL) %&gt;% 
+  filter(TYPE != &quot;NO&quot;) %&gt;% #restrict to LIC (low-income communities == QOZ eligible)
+  mutate(QOZ = as.factor(QOZ)) %&gt;%  #set QOZ as factor 
+  mutate(popdens = as.double(Pop/area)) %&gt;% 
+  mutate(prjdens = as.double(n.prj/area)) %&gt;% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+#table one, compare all variables between OZ and Non-OZ-LIC
+tableOne1 &lt;- CreateTableOne(strata = &quot;QOZ&quot;, vars = c(&quot;Pop&quot;,&quot;popdens&quot;,&quot;PovRt.trct&quot;,&quot;MdnInc.trct&quot;,&quot;UnemplRt&quot;,&quot;VacRt&quot;,&quot;RentRt&quot;,&quot;GrEduRt&quot;,&quot;ColEduRt&quot;,&quot;PctWhite&quot;), data = d)
+tableOne1</code></pre>
+<pre><code>##                          Stratified by QOZ
+##                           DESIGNATEDQOZ       NO                  p     
+##   n                           7756               33231                  
+##   Pop (mean (sd))          4009.15 (1940.02)   4183.60 (1962.06)  &lt;0.001
+##   popdens (mean (sd))      6502.27 (14045.50)  6425.87 (14313.75)  0.671
+##   PovRt.trct (mean (sd))      0.30 (0.13)         0.21 (0.12)     &lt;0.001
+##   MdnInc.trct (mean (sd)) 42246.32 (15682.17) 53031.61 (18347.76) &lt;0.001
+##   UnemplRt (mean (sd))        0.12 (0.07)         0.09 (0.05)     &lt;0.001
+##   VacRt (mean (sd))           0.15 (0.10)         0.14 (0.11)     &lt;0.001
+##   RentRt (mean (sd))          0.55 (0.22)         0.43 (0.22)     &lt;0.001
+##   GrEduRt (mean (sd))         0.05 (0.05)         0.06 (0.06)     &lt;0.001
+##   ColEduRt (mean (sd))        0.11 (0.07)         0.14 (0.08)     &lt;0.001
+##   PctWhite (mean (sd))        0.58 (0.30)         0.68 (0.27)     &lt;0.001
+##                          Stratified by QOZ
+##                           test
+##   n                           
+##   Pop (mean (sd))             
+##   popdens (mean (sd))         
+##   PovRt.trct (mean (sd))      
+##   MdnInc.trct (mean (sd))     
+##   UnemplRt (mean (sd))        
+##   VacRt (mean (sd))           
+##   RentRt (mean (sd))          
+##   GrEduRt (mean (sd))         
+##   ColEduRt (mean (sd))        
+##   PctWhite (mean (sd))</code></pre>
+<pre class="r"><code>tableOne2 &lt;- CreateTableOne(strata = &quot;QOZ&quot;, vars = c(&quot;metro&quot;,&quot;n.cde&quot;,&quot;n.prj&quot;,&quot;avg.prj.yr&quot;,&quot;ttl.amt.prj&quot;,&quot;avg.amt.prj&quot;,&quot;avg.amt.yr&quot;,&quot;CDE&quot;,&quot;NRE&quot;,&quot;RE&quot;,&quot;SPE&quot;), data = d)
+tableOne2</code></pre>
+<pre><code>##                               Stratified by QOZ
+##                                DESIGNATEDQOZ            
+##   n                                   7756              
+##   metro = Non-Metropolitan (%)         216 (17.8)       
+##   n.cde (mean (sd))                   1.47 (1.01)       
+##   n.prj (mean (sd))                   1.85 (2.24)       
+##   avg.prj.yr (mean (sd))              1.09 (0.28)       
+##   ttl.amt.prj (mean (sd))      16563413.13 (34984726.49)
+##   avg.amt.prj (mean (sd))       8768029.41 (9061716.25) 
+##   avg.amt.yr (mean (sd))        9465329.40 (9890527.64) 
+##   CDE (mean (sd))                     1.50 (1.45)       
+##   NRE (mean (sd))                     1.46 (1.22)       
+##   RE (mean (sd))                      1.66 (1.89)       
+##   SPE (mean (sd))                     1.07 (0.26)       
+##                               Stratified by QOZ
+##                                NO                        p      test
+##   n                                  33231                          
+##   metro = Non-Metropolitan (%)         349 (20.1)         0.128     
+##   n.cde (mean (sd))                   1.18 (0.54)        &lt;0.001     
+##   n.prj (mean (sd))                   1.34 (1.06)        &lt;0.001     
+##   avg.prj.yr (mean (sd))              1.04 (0.19)        &lt;0.001     
+##   ttl.amt.prj (mean (sd))      10142426.68 (14559999.67) &lt;0.001     
+##   avg.amt.prj (mean (sd))       7787664.04 (9822036.27)   0.006     
+##   avg.amt.yr (mean (sd))        8049492.52 (10214880.61) &lt;0.001     
+##   CDE (mean (sd))                     1.19 (0.40)         0.280     
+##   NRE (mean (sd))                     1.22 (0.87)        &lt;0.001     
+##   RE (mean (sd))                      1.24 (0.74)        &lt;0.001     
+##   SPE (mean (sd))                     1.03 (0.18)         0.153</code></pre>
+<pre class="r"><code>tableOne3 &lt;- CreateTableOne(strata = &quot;QOZ&quot;, vars = c(&quot;PovRatio.cnty&quot;,&quot;PovRatio.st&quot;,&quot;MdnIncRatio.cnty&quot;,&quot;MdnIncRatio.st&quot;,&quot;prjdens&quot;,&quot;invdens&quot;), data = d)
+tableOne3</code></pre>
+<pre><code>##                               Stratified by QOZ
+##                                DESIGNATEDQOZ             
+##   n                                   7756               
+##   PovRatio.cnty (mean (sd))           1.80 (0.84)        
+##   PovRatio.st (mean (sd))             1.99 (0.91)        
+##   MdnIncRatio.cnty (mean (sd))        0.69 (0.27)        
+##   MdnIncRatio.st (mean (sd))          0.63 (0.23)        
+##   prjdens (mean (sd))                 3.60 (9.13)        
+##   invdens (mean (sd))          36479541.54 (100504912.02)
+##                               Stratified by QOZ
+##                                NO                        p      test
+##   n                                  33231                          
+##   PovRatio.cnty (mean (sd))           1.30 (0.72)        &lt;0.001     
+##   PovRatio.st (mean (sd))             1.39 (0.78)        &lt;0.001     
+##   MdnIncRatio.cnty (mean (sd))        0.85 (0.28)        &lt;0.001     
+##   MdnIncRatio.st (mean (sd))          0.79 (0.26)        &lt;0.001     
+##   prjdens (mean (sd))                 3.18 (5.48)         0.118     
+##   invdens (mean (sd))          28642554.40 (84554370.95)  0.022</code></pre>
+<pre class="r"><code># compare distribution of Poverty Rate between OZ and Non-OZ LIC
+d %&gt;% ggplot(aes(PovRt.trct, color = QOZ)) + 
+  scale_color_manual(values=c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;), 
+                       name=&quot;Census Tract\nDesignation&quot;,
+                       breaks=c(&quot;DESIGNATEDQOZ&quot;,&quot;NO&quot;),
+                       labels=c(&quot;Designated OZone&quot;, &quot;Non-OZone LIC&quot;)) +
+  geom_density(alpha = 0.4) + 
+  geom_vline(data=data.frame(d[!is.na(d$PovRt.trct),] %&gt;% 
+                               group_by(QOZ) %&gt;% 
+                               summarise(grp.mean=mean(PovRt.trct))), 
+    aes(xintercept=grp.mean, color=QOZ), 
+    linetype=&quot;dashed&quot;) +
+    xlab(&quot;2016 Poverty Rate&quot;) </code></pre>
+<pre><code>## Warning: Removed 28 rows containing non-finite values (stat_density).</code></pre>
+<p><img src="draft_files/figure-html/4b%20Compare%20OZ%20and%20Non-OZ-LIC%20pt1-1.png" width="672" /></p>
+</div>
+<div id="c.compare-oz-and-non-oz-lic-pt2" class="section level4">
+<h4>4c.Compare OZ and Non-OZ-LIC pt2</h4>
+<pre class="r"><code># review distribution of variables
+skim(d[23:39])</code></pre>
+<pre><code>## Skim summary statistics
+##  n obs: 40987 
+##  n variables: 17 
+## 
+## ── Variable type:numeric ───────────────────────────────────────────
+##          variable missing complete     n      mean        sd        p0
+##          ColEduRt      19    40968 40987     0.13      0.078     0    
+##           GrEduRt      19    40968 40987     0.061     0.058     0    
+##       MdnInc.cnty       0    40987 40987 63835.27  15037.42  22500    
+##         MdnInc.st       0    40987 40987 67848.61   9340.28  50592    
+##       MdnInc.trct     366    40621 40987 51002.84  18366.71   2499    
+##  MdnIncRatio.cnty     366    40621 40987     0.82      0.28      0.038
+##    MdnIncRatio.st     366    40621 40987     0.76      0.26      0.034
+##          PctWhite      18    40969 40987     0.66      0.28      0    
+##               Pop       0    40987 40987  4150.59   1959.08      0    
+##     PovRatio.cnty      28    40959 40987     1.39      0.77      0    
+##       PovRatio.st      28    40959 40987     1.5       0.84      0    
+##        PovRt.cnty       0    40987 40987     0.17      0.053     0.038
+##          PovRt.st       0    40987 40987     0.15      0.025     0.085
+##        PovRt.trct      28    40959 40987     0.23      0.13      0    
+##            RentRt      59    40928 40987     0.46      0.23      0    
+##          UnemplRt      28    40959 40987     0.099     0.06      0    
+##             VacRt      55    40932 40987     0.14      0.1       0    
+##        p25       p50       p75      p100     hist
+##      0.076     0.11      0.17       1    ▇▅▁▁▁▁▁▁
+##      0.026     0.045     0.075      0.73 ▇▂▁▁▁▁▁▁
+##  54085     61819     70076     147164    ▁▃▇▃▁▁▁▁
+##  59742     64585     73714      92049    ▁▆▇▃▆▂▁▂
+##  39026     49732     60479     250001    ▂▇▂▁▁▁▁▁
+##      0.63      0.81      0.99       4.84 ▃▇▁▁▁▁▁▁
+##      0.58      0.75      0.89       3.75 ▂▇▂▁▁▁▁▁
+##      0.49      0.74      0.9        1    ▂▂▂▂▃▅▅▇
+##   2756.5    3898      5228      40616    ▇▃▁▁▁▁▁▁
+##      0.87      1.22      1.74      10.33 ▇▆▁▁▁▁▁▁
+##      0.91      1.32      1.9        9.65 ▇▇▂▁▁▁▁▁
+##      0.14      0.17      0.19       0.49 ▁▅▇▂▁▁▁▁
+##      0.13      0.16      0.17       0.22 ▁▂▂▃▇▃▁▁
+##      0.14      0.2       0.29       1    ▃▇▅▂▁▁▁▁
+##      0.27      0.43      0.62       1    ▁▇▇▇▆▅▃▂
+##      0.059     0.086     0.12       1    ▇▂▁▁▁▁▁▁
+##      0.07      0.12      0.18       1    ▇▅▁▁▁▁▁▁</code></pre>
+<pre class="r"><code>#cont var x bin/cat &gt;&gt; box plots
+
+p1 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;PovRt.trct&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+p2 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;UnemplRt&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+p3 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;VacRt&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+p4 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;GrEduRt&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+p5 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;ColEduRt&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+p6 &lt;- ggboxplot(d, x = &quot;QOZ&quot;, y = &quot;PctWhite&quot;,
+                 color = &quot;QOZ&quot;, palette = &quot;jco&quot;)
+
+ggarrange(p1,p2,p3,p4,p5,p6 + rremove(&quot;x.text&quot;), 
+          labels = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;),
+          ncol = 3, nrow = 2)</code></pre>
+<pre><code>## Warning: Removed 28 rows containing non-finite values (stat_boxplot).
+
+## Warning: Removed 28 rows containing non-finite values (stat_boxplot).</code></pre>
+<pre><code>## Warning: Removed 55 rows containing non-finite values (stat_boxplot).</code></pre>
+<pre><code>## Warning: Removed 19 rows containing non-finite values (stat_boxplot).
+
+## Warning: Removed 19 rows containing non-finite values (stat_boxplot).</code></pre>
+<pre><code>## Warning: Removed 18 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="draft_files/figure-html/4c%20Compare%20OZ%20and%20Non-OZ-LIC%20pt2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="map-data" class="section level3">
+<h3>5.Map data</h3>
+<pre class="r"><code>states.sf &lt;- usstates_sf.48.albers %&gt;% 
+  merge(data.frame(unique(fips_codes[,1:2])),by.x=&quot;GEOID&quot;,by.y=&quot;state_code&quot;) %&gt;% 
+  merge(stab,by=&quot;state&quot;)
+
+counties.sf &lt;- uscounties_sf.48.albers %&gt;% 
+  merge(data.frame(unique(fips_codes[,1:2])),by.x=&quot;GEOID&quot;,by.y=&quot;state_code&quot;) %&gt;% 
+  merge(stab,by=&quot;state&quot;)
+
+mkmaps &lt;- function(x,y,z,w){
+x %&gt;%
+  filter(state %in% z) %&gt;% 
+  group_by(eval(parse(text=w))) %&gt;% 
+  summarise(value = first(eval(parse(text=y)))) %&gt;% 
+  ggplot(aes(fill = value)) +
+  geom_sf(color = NA, lwd=.5) +
+  labs(fill=y) +
+  geom_sf(data = st_geometry(states.sf[states.sf$state %in% z,]), fill = &quot;transparent&quot;, color = &quot;white&quot;, lwd=.5) +
+  geom_sf(data = st_geometry(x[(x$state %in% z) &amp; x$QOZ==&quot;DESIGNATEDQOZ&quot;,]), fill = &quot;transparent&quot;, color = &quot;orange&quot;, lwd=.5) %&gt;%
+    return()
+}
+
+#eval(parse(text=y))
+
+s &lt;- us.oz.sf3 %&gt;% 
+  mutate(area = set_units(st_area(.),mi^2)) %&gt;% 
+  mutate(QOZ = as.factor(QOZ)) %&gt;%  #set QOZ as factor 
+  mutate(popdens = as.double(Pop/area)) %&gt;% 
+  mutate(prjdens = as.double(n.prj/area)) %&gt;% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+tract.qoz.al &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;AL&quot;),&quot;GEOID&quot;)
+tract.qoz.pa &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;PA&quot;),&quot;GEOID&quot;)
+tract.qoz.ny &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;NY&quot;),&quot;GEOID&quot;)
+
+cowplot::plot_grid(
+  tract.qoz.al,
+  tract.qoz.pa,
+  tract.qoz.ny,
+  nrow = 1
+)</code></pre>
+<p><img src="draft_files/figure-html/5%20generate%20maps-1.png" width="672" /></p>
+<pre class="r"><code>tract.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.trct&#39;,c(&quot;AL&quot;),&#39;GEOID&#39;)
+county.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.cnty&#39;,c(&quot;AL&quot;),&#39;CountyFIPS&#39;)
+state.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.st&#39;,c(&quot;AL&quot;,&quot;MS&quot;),&#39;StateFIPS&#39;)
+
+cowplot::plot_grid(
+  tract.povrt.map,
+  county.povrt.map,
+  state.povrt.map,
+  nrow = 1
+)</code></pre>
+<p><img src="draft_files/figure-html/5%20generate%20maps-2.png" width="672" /></p>
+</div>
+<div id="spatial-analysis" class="section level3">
+<h3>6.Spatial Analysis</h3>
+<pre class="r"><code>#spatial patterns
+
+# ANALYSIS QUESTION -- where OZones more or less likely than non-designated, but eligible LICs to be clustered among other tracts of similar neighborhood characteristics
+#- distress index?
+#- poverty?
+
+# ANALYSIS QUESTION -- describe spatial patterns of OZones: are different states more or less clustered??
+require(&quot;spdep&quot;)
+require(&quot;magrittr&quot;)
+require(&quot;map&quot;)
+
+# initialize global moran&#39;s I function
+globalSA &lt;- function(x,y){
+  d &lt;- as(x[!is.na(st_dimension(x)),], &#39;Spatial&#39;)
+  #set up weight matrix
+  w &lt;- poly2nb(d, row.names=d$NAMES)
+  wm &lt;- nb2mat(w, style=&#39;B&#39;)
+  
+  #row standardisation of the weights matrix:
+  rwm &lt;- mat2listw(wm, style=&#39;W&#39;)
+  
+  # Checking if rows add up to 1
+  mat &lt;- listw2mat(rwm)
+  apply(mat, 1, sum)[1:15]
+  vec &lt;-as.numeric(d[y][[1]])
+  p1 &lt;- moran.plot(vec, rwm)
+
+  #compute Moran’s I and do a significance test
+  ww &lt;-  nb2listw(w, style=&#39;B&#39;)
+
+  #test for significance. 
+  sig &lt;- moran.test(vec, ww, randomisation=FALSE)
+  
+  #Monte Carlo simulation
+  mc &lt;- moran.mc(vec, ww, nsim=99)
+  
+  return(list(vec, rwm, sig,mc))
+}
+
+morans_model &lt;- function(df) {
+  globalSA(df,&quot;OZone&quot;)
+}
+
+by_state &lt;- 
+  us.oz.sf %&gt;% 
+  #filter(state %in% c(&quot;AL&quot;)) %&gt;% 
+  filter(state_code %in% lower48[27:51]) %&gt;% 
+  mutate(OZone = (QOZ == &quot;DESIGNATEDQOZ&quot;)) %&gt;% 
+  group_by(state) %&gt;% 
+  nest()
+
+by_state &lt;- by_state %&gt;% 
+  mutate(morans_model = purrr::map(data, morans_model)) 
+
+get_morans.i &lt;- function(df) {
+  return(df[4][[1]]$statistic)
+}
+
+get_p.val &lt;- function(df) {
+  return(df[4][[1]]$p.value)
+}
+
+by_state &lt;- by_state %&gt;% 
+  mutate(morans_i = purrr::map(morans_model, get_morans.i)) %&gt;% 
+  mutate(morans_pval = purrr::map(morans_model, get_p.val))</code></pre>
+</div>
+<div id="temporal-analysis" class="section level3">
+<h3>7.Temporal Analysis</h3>
+<pre class="r"><code>#time trends</code></pre>
+</div>
+<div id="regression-analysis" class="section level3">
+<h3>8.Regression Analysis</h3>
+<pre class="r"><code>#outcomes... classification as QOZ
+#2-sample tests, compare LIC/QOZ
+chisq.test(table(d$QOZ, d$PovRt.trct)) </code></pre>
+<pre><code>## Warning in chisq.test(table(d$QOZ, d$PovRt.trct)): Chi-squared
+## approximation may be incorrect</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(d$QOZ, d$PovRt.trct)
+## X-squared = 40348, df = 40233, p-value = 0.3421</code></pre>
+<pre class="r"><code>summary((glm(QOZ~Pop + PovRt.trct + MdnInc.trct + UnemplRt + VacRt + RentRt + ColEduRt + GrEduRt + PctWhite, data=d, family=binomial())))</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = QOZ ~ Pop + PovRt.trct + MdnInc.trct + UnemplRt + 
+##     VacRt + RentRt + ColEduRt + GrEduRt + PctWhite, family = binomial(), 
+##     data = d)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.6095   0.3661   0.4941   0.6436   2.4661  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.957e+00  1.251e-01  23.646  &lt; 2e-16 ***
+## Pop         -3.200e-05  7.310e-06  -4.377 1.20e-05 ***
+## PovRt.trct  -2.763e+00  1.700e-01 -16.251  &lt; 2e-16 ***
+## MdnInc.trct  6.825e-06  1.467e-06   4.651 3.30e-06 ***
+## UnemplRt    -2.306e+00  2.759e-01  -8.358  &lt; 2e-16 ***
+## VacRt       -1.040e+00  1.465e-01  -7.099 1.25e-12 ***
+## RentRt      -1.512e+00  8.315e-02 -18.185  &lt; 2e-16 ***
+## ColEduRt     1.743e+00  2.950e-01   5.906 3.50e-09 ***
+## GrEduRt      8.046e-01  3.903e-01   2.061 0.039286 *  
+## PctWhite    -1.959e-01  5.743e-02  -3.411 0.000647 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 39278  on 40620  degrees of freedom
+## Residual deviance: 35523  on 40611  degrees of freedom
+##   (366 observations deleted due to missingness)
+## AIC: 35543
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code>summary((glm(QOZ~n.cde + n.prj + avg.prj.yr + ttl.amt.prj + avg.amt.prj + avg.amt.yr, data=d, family=binomial())))</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = QOZ ~ n.cde + n.prj + avg.prj.yr + ttl.amt.prj + 
+##     avg.amt.prj + avg.amt.yr, family = binomial(), data = d)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.4425  -1.3663   0.9358   0.9622   2.3558  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  1.498e+00  2.903e-01   5.159 2.49e-07 ***
+## n.cde       -4.257e-01  1.011e-01  -4.212 2.53e-05 ***
+## n.prj       -1.919e-02  5.705e-02  -0.336    0.737    
+## avg.prj.yr  -4.483e-01  2.805e-01  -1.598    0.110    
+## ttl.amt.prj -7.656e-09  6.121e-09  -1.251    0.211    
+## avg.amt.prj -3.062e-08  2.702e-08  -1.133    0.257    
+## avg.amt.yr   2.974e-08  2.785e-08   1.068    0.286    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4003.4  on 2954  degrees of freedom
+## Residual deviance: 3883.9  on 2948  degrees of freedom
+##   (38032 observations deleted due to missingness)
+## AIC: 3897.9
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code>exp(coef(glm(QOZ~PovRt.trct, data=d, family=binomial()))) #Odds ratios</code></pre>
+<pre><code>##  (Intercept)   PovRt.trct 
+## 15.857984418  0.005474442</code></pre>
+</div>
+<div id="web-map-leaflet-shiny-tool" class="section level3">
+<h3>9.Web-map, leaflet, Shiny tool</h3>
+<pre class="r"><code># make a leaflet map
+# make a shiny tool to select and display state maps</code></pre>
+</div>
+</div>
+
+<!-- give the footer some space -->
+<br/>
+<br/>
+
+<footer id="site-footer">
+  <div id="footer1">
+  This website is a project for Adam Wilson's <a href="http://www.adamwilson.us/RDataScience"><i> Spatial Data Science (GEO503) </i></a>Course at the University at Buffalo
+  </div>
+  <div id="footer2">
+  <a rel="license" property="http://creativecommons.org/ns#license"
+  href="http://creativecommons.org/licenses/by/4.0/" ><img src="img/cc-by.svg" alt="cc-by"/></a> 
+  </div>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>
