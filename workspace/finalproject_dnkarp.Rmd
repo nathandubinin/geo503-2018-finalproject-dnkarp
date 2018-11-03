@@ -1,0 +1,475 @@
+---
+title: "finalproject_dnkarp"
+author: "dnkarp"
+date: "10/26/2018"
+output: html_document
+---
+
+#--------------------------------------------------------------
+"Social impact could include, but not limited to; workforce education/development, workforce diversity, neighborhood revitalization, health and environment friendly and job creation." - WNY Impact Investment Fund
+
+RULE: a low-income community census tract has an individual poverty rate of at least 20% and median family income up to 80% percent of the area median. Every state or territory can designate up to 25% of its census tracts that meet qualification requirements
+
+EXCEPTION: 5% of census tracts that do not meet the definition of a low-income community can be designated under an exemption. Exempt census tracts must be contiguous with low-income community census tracts that are designated as Opportunity Zones, and the median family income of the exempt tract must not exceed 125% of the median family income of the designated low-income community census tract with which it is contiguous. 
+
+DEFINITIONS: low-income community 45d(e) [American Jobs Creation Act of 2004, IRC §45D(e)(2)]
+A “low-income community” is defined as any population census tract where the 
+- poverty rate for such tract is at least 20% 
+- or, in the case of a tract not located within a metropolitan area, median family income for such tract does not exceed 80 of statewide median family income, 
+- or, in the case of a tract located within a metropolitan area, the median family income for such tract does not exceed 80% of the greater of statewide median family income or the metropolitan area median family income.
+
+--------------------------------------------------------------
+exploring social impact investments -- how many CDFIs, CDEs, CDCs are opporating in the 'region'... NMTCs?
+number of impact funds?
+indicators of:
+  workforce education/development, 
+  workforce diversity, 
+  neighborhood revitalization, 
+  health and environment friendly,
+  and job creation.
+  
+bond issuance?
+
+#--------------------------------------------------------------
+### 0.Set-up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+### 1.Load libraries
+```{r load libs, message=F, warning=F, cache=T, results='hide'}
+
+# data wrangling libs
+library(tidyverse)
+library(broom)
+library(data.table)
+library(purrr)
+library(stringr)
+
+# data analysis
+library(skimr)
+library(units)
+
+# spatial libs
+library(sf)
+library(maps)
+library(albersusa)
+
+# census data libs + install api key
+library(tidycensus)
+library(tigris)
+census_api_key("e7051ec917473383ba64a0c65d7090fa5cc10cf4")
+options(tigris_use_cache = TRUE)
+
+# graphics/viz libs
+library(viridis)
+library(gridExtra)
+library(ggthemes)
+library(cowplot)
+
+
+```
+
+### 2.Load data
+##### 2a.Load data
+```{r 2a load OZ csv data, cache=T}
+
+# load opportunity zones (source: CDFI Fund[https://www.cdfifund.gov/Pages/Opportunity-Zones.aspx]); csv, tract-level data (all US)
+ozones.raw <- read_csv("data/OpportunityZones2/Opportunity Zones.csv")
+
+# get list of state postal codes, assign state/territory flag
+# 50+DC; territories (PR - Puerto Rico, VI - US Vir Islands, GU - Guam, MP - N.Mariana, UM - Minor Outlying, AS - Am Samoa)
+stab <- rbind(
+   cbind(state=c(unique(fips_codes$state)[1:51]),is.state=as.logical(T))
+  ,cbind(state=c(unique(fips_codes$state)[52:57]),is.state=as.logical(F))
+)
+
+# merge (left join) state abbreviations to ozone data (based on FIPS code); add state/terr flag
+ozones <- ozones.raw %>% mutate("state_code"=substr(ozones.raw$GEOID10,1,2)) %>% merge(data.frame(unique(fips_codes[,1:2])),by="state_code") %>% merge(stab,by="state")
+
+# set as datatable
+setDT(ozones)
+
+# subset ozone data if in 51 or in territories
+ozones.51 <- ozones[as.logical(is.state),]
+ozones.terr <- ozones[!as.logical(is.state),]
+
+```
+
+##### 2b.Load data
+```{r 2b load ACS spatial features data from raw, cache=T}
+if(!file.exists("data/uscounties_sf.rds")){
+# download census tract boundaries (with population data, 2016) from tidycensus; get per state and bind
+ustracts_sf <- reduce(
+  purrr::map(stab[stab[,2]==T,1], function(x) {
+    get_acs(geography = "tract", variables = "B01003_001", 
+            state = x, geometry = TRUE)
+  }), 
+  rbind
+)
+
+# get counties (filter PR)
+uscounties_sf <- get_acs(geography = "county", variables = "B01003_001", geometry = TRUE) %>% filter(substr(GEOID,1,2)!="72")
+# get states (filter PR)
+usstates_sf <- get_acs(geography = "state", variables = "B01003_001", geometry = TRUE) %>% filter(GEOID!="72")
+
+# Save a sf object to a file
+saveRDS(ustracts_sf, "data/ustracts_sf.rds")
+saveRDS(uscounties_sf, "data/uscounties_sf.rds")
+saveRDS(usstates_sf, "data/usstates_sf.rds")
+}
+```
+
+##### 2c.Load data
+```{r 2c load ACS spatial features data from repo, cache=T}
+# Restore it under a different name
+ustracts_sf <- readRDS("data/ustracts_sf.rds")
+uscounties_sf <- readRDS("data/uscounties_sf.rds")
+usstates_sf <- readRDS("data/usstates_sf.rds")
+
+# reproject to albers & drop hawaii and alaska (for now)
+lower48 <- data.frame(state_code=unique(fips_codes$state_code)) %>% filter(!(state_code %in% c("02","15"))) %>% mutate(state_code=as.character(state_code)) %>% .[[1]]
+
+prj.alb.48 <- function(x){x %>% filter(substr(GEOID,1,2) %in% lower48) %>% st_transform(us_laea_proj)}
+
+ustracts_sf.48.albers <- prj.alb.48(ustracts_sf)
+uscounties_sf.48.albers <- prj.alb.48(uscounties_sf)
+usstates_sf.48.albers <- prj.alb.48(usstates_sf)
+
+```
+
+##### 2d.Load data
+```{r 2d load NMTC csv data from raw, cache=T}
+nmtc.raw <- read_csv("data/nmtc_investments.csv")
+#NMTC Public Data Release: 2003-2015 Data File [https://www.cdfifund.gov/news-events/news/Pages/news-detail.aspx?NewsID=270&Category=Press%20Releases]
+
+nmtc <- nmtc.raw %>% 
+  mutate(GEOID = str_pad(`2010 Census Tract`, width=11, side="left", pad="0")) %>% 
+  mutate(metro = as.factor(`Metro/Non-Metro, 2010 Census`)) %>% 
+  mutate(cde = as.factor(`Community Development Entity (CDE) Name`)) %>% 
+  mutate(type = as.factor(`QALICB Type`)) %>% 
+  mutate(year = `Origination Year`) %>% 
+  mutate(qlici.amount = `Project QLICI Amount`) %>% 
+  mutate(total.cost = `Estimated Total Project Cost`) %>% 
+  select(GEOID, metro, cde, type, year, qlici.amount, total.cost)
+
+nmtc.tract <- nmtc %>%
+  group_by(GEOID, type) %>% 
+  mutate(one = 1) %>% 
+  summarize(one = sum(one)) %>% 
+  spread(type, one) %>% 
+  group_by(GEOID) %>% 
+  summarise_all(funs(sum))
+
+nmtc.tract <- nmtc %>% 
+  group_by(GEOID) %>% 
+  summarize(metro = first(metro), 
+            n.cde = length(unique(cde)), 
+            n.prj = n(), 
+            avg.prj.yr = n()/length(unique(year)), 
+            ttl.amt.prj = sum(qlici.amount), 
+            avg.amt.prj = mean(qlici.amount), 
+            avg.amt.yr = sum(qlici.amount)/length(unique(year))) %>%
+  merge(nmtc.tract, by="GEOID")
+
+```
+
+### 3.Map data
+```{r 3 make 'test' maps, eval=F}
+mkmaps <- function(x,y){
+x %>%
+  ggplot(aes(fill = eval(parse(text=y)))) + 
+  geom_sf(color = NA, lwd=.5) +
+  labs(fill=y) %>% 
+    return()
+}
+
+tract.pop.map <- ustracts_sf.48.albers %>% filter(substr(GEOID,1,2)=="01") %>% mkmaps('estimate')
+county.pop.map <- uscounties_sf.48.albers%>% filter(substr(GEOID,1,2)=="01") %>% mkmaps('estimate')
+state.pop.map <- usstates_sf.48.albers %>% filter(substr(GEOID,1,2)=="01") %>% mkmaps('estimate')
+
+cowplot::plot_grid(
+  tract.pop.map,
+  county.pop.map,
+  state.pop.map,
+  nrow = 1
+)
+
+```
+
+### 4.Merge attribute data with spatial data
+#### 4a.Merge OZone attribute data with spatial data
+```{r 4 merge attribute data, cache=T}
+us.oz.sf <- merge(ustracts_sf.48.albers, ozones.51, by.x = "GEOID", by.y = "GEOID10", all.x)
+
+if(F){
+
+tract.qoz.al <- us.oz.sf %>% filter(substr(GEOID,1,2)=="01") %>% mkmaps('QOZ')
+tract.qoz.pa <- us.oz.sf %>% filter(substr(GEOID,1,2)=="42") %>% mkmaps('QOZ')
+tract.qoz.ny <- us.oz.sf %>% filter(substr(GEOID,1,2)=="36") %>% mkmaps('QOZ')
+
+
+cowplot::plot_grid(
+  tract.qoz.al,
+  tract.qoz.pa,
+  tract.qoz.ny,
+  nrow = 1
+)
+
+}
+
+```
+
+#### 4b.Get and Merge area(community) variables
+```{r}
+#poverty
+#race/ethnic mix
+#education, employment, housing, health
+#commerical development, jobs, industry, GDP??
+#environment: urban/suburban/rural/metro-region
+
+# load variables
+v16 <- load_variables(2016, "acs5", cache = TRUE)
+v16 %>% select(name, label) %>% filter(grepl("19113", name))
+
+# population
+totpop_var <- cbind(c("B00001_001"),c("TotPop"))
+# poverty
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&var=B17001002
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&var=B19113001
+povinc_var <- cbind(c("B17001_002","B19113_001"),c("BelowPov","MdnFamInc"))
+# race/ethnic mix
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B02001
+race_var <- cbind(
+  c("B02001_002","B02001_003","B02001_004","B02001_005","B02001_006"),
+  c("White","Black","NatAm","Asian","NatIsl")
+  )
+#education, employment, housing
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B15003
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B23025
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B25002
+# https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B25003
+socioecon_var <- cbind(
+  c("B15003_001", "B15003_017", "B15003_018", "B15003_019","B15003_020", "B15003_021","B15003_022","B15003_023","B15003_024", "B15003_025", "B23025_003", "B23025_005", "B25002_001", "B25002_003", "B25003_001", "B25003_003"),
+  c("Pop25", "HS", "GED", "CollegeNoDegree0", "CollegeNoDegree1", "AssocDegree", "BachDegree", "MastDegree", "ProfDegree", "DoctDegree", "CivLabor", "Unempl", "HousingUnits", "Vacant", "OccUnits", "OccRental" )
+  )
+#commerical development, jobs, industry, GDP??
+econdev_var <- c()
+#urban: urban/suburban/rural/metro-region
+urban_var <- c()
+#health: diabetes, obesity, substance abuse, chronic
+#buit environment: parks, rec centers, health clinics, civic inst?
+#property value?
+
+select_vars <- rbind(totpop_var, povinc_var, race_var, socioecon_var, econdev_var, urban_var) %>% data.frame() %>% rename(variable = X1, v = X2) %>% mutate(variable = as.character(variable))
+
+us <- unique(fips_codes$state)[1:51]
+
+us.trcts.acs16 <- reduce(
+  purrr::map(us[1], function(x) {
+    get_acs(geography = "tract", year = 2016, variables = select_vars[,1], 
+            state = x, geometry = F)
+  }), 
+  rbind
+)
+
+us.trcts.acs15 <- reduce(
+  purrr::map(us[1], function(x) {
+    get_acs(geography = "tract", year = 2015, variables = select_vars[,1], 
+            state = x, geometry = F)
+  }), 
+  rbind
+)
+
+
+us.trcts.acs16.wide <- us.trcts.acs16 %>% left_join(select_vars, by="variable") %>% select(-c(moe,NAME,variable)) %>% 
+spread(key = v, value = estimate, sep = "16.")
+
+us.trcts.acs15.wide <- us.trcts.acs15 %>% left_join(select_vars, by="variable") %>% select(-c(moe,NAME,variable)) %>% 
+spread(key = v, value = estimate, sep = "15.")
+
+us.trcts.acs.wide <- merge(us.trcts.acs16.wide,us.trcts.acs15.wide,by="GEOID")
+
+us.trcts.acs.chng <- us.trcts.acs.wide %>% mutate(
+  PopChng = ((v16.TotPop - v15.TotPop)/v15.TotPop),
+  PovChng = ((v16.BelowPov - v15.BelowPov)/v15.BelowPov),
+  MdnIncChng = ((v16.MdnFamInc - v15.MdnFamInc)/v15.MdnFamInc),
+  UnemplChng = (((v16.Unempl/v16.CivLabor) - (v15.Unempl/v15.CivLabor))/(v15.Unempl/v15.CivLabor)),
+  VacChng = (((v16.Vacant/v16.HousingUnits) - (v15.Vacant/v15.HousingUnits))/(v15.Vacant/v15.HousingUnits)),
+  RentChng = (((v16.OccRental/v16.OccUnits) - (v15.OccRental/v15.OccUnits))/(v15.OccRental/v15.OccUnits)),
+  GrEduChng = (((v16.MastDegree + v16.DoctDegree)/v16.Pop25) - ((v15.MastDegree + v15.DoctDegree)/v15.Pop25))/((v15.MastDegree + v15.DoctDegree)/v15.Pop25),
+  ColEduChng = ((v16.BachDegree/v16.Pop25) - (v15.BachDegree/v15.Pop25))/(v15.BachDegree/v15.Pop25),
+  RaceChng = ((v16.White/v16.Black) - (v15.White/v15.Black))/(v15.White/v15.Black)
+    ) %>% select(1,50:58)
+
+us.trcts.acs.rt16 <- us.trcts.acs.wide %>% mutate(
+  Pop = v16.TotPop,
+  PovRt = v16.BelowPov/v16.TotPop,
+  MdnInc = v16.MdnFamInc,
+  UnemplRt = v16.Unempl/v16.CivLabor,
+  VacRt = v16.Vacant/v16.HousingUnits,
+  RentRt = v16.OccRental/v16.OccUnits,
+  GrEduRt = (v16.MastDegree + v16.DoctDegree)/v16.Pop25,
+  ColEduRt = v16.BachDegree/v16.Pop25,
+  PctWhite = v16.White/v16.TotPop
+    ) %>% select(1,50:58)
+
+us.oz.sf2 <- us.oz.sf %>% select(-c(variable,estimate,moe)) %>% merge(nmtc.tract, by="GEOID", all.x=T) %>% merge(us.trcts.acs.chng,by="GEOID", all.x=T)
+
+us.oz.sf3 <- us.oz.sf %>% select(-c(variable,estimate,moe)) %>% merge(nmtc.tract, by="GEOID", all.x=T) %>% merge(us.trcts.acs.rt16,by="GEOID", all.x=T)
+
+```
+
+### 5.Descriptive analysis
+```{r}
+#national
+#regional
+#state
+
+d <- us.oz.sf3 %>% st_set_geometry(NULL)
+
+#define batch plotting functions
+batchbox <- function(x,y){
+  ggplot(d, aes(x=x, y=y)) +
+    geom_boxplot(color="blue")
+  }
+
+batchbox("QOZ","PopChng")
+
+d %>% filter(TYPE == "LIC") %>% 
+  ggplot(aes(x=factor(QOZ), y=UnemplRt)) +
+    geom_boxplot()
+
+my_cols <- c("#00AFBB", "#E7B800", "#FC4E07")
+pairs(d[(d$TYPE != "NO"),11:16], pch = 19,  cex = 0.5,
+      col = my_cols[as.factor(d$QOZ)],
+      lower.panel=NULL)
+
+# get crosstab of number of tracts by LIC and QOZ designations
+d %>% group_by(TYPE, QOZ) %>% xtabs(~ TYPE + QOZ, data=.)
+s <- d %>% group_by(state) %>% summarize(n_tract = n(), n_LIC = sum(TYPE == "LIC"), pct_LIC = mean(TYPE == "LIC"), n_QOZ = sum(QOZ == "DESIGNATEDQOZ"), pct_QOZ = mean(QOZ == "DESIGNATEDQOZ"), pct_QOZ2 = n_QOZ/n_LIC) 
+
+# get top and bottom deciles of % of tracts designated as LICs
+s %>% arrange(pct_LIC) %>% slice(c(1:5,(n()-4):n()))
+# get top and bottom deciles of % of LICs designated as QOZ
+s %>% arrange(pct_QOZ2) %>% slice(c(1:5,(n()-4):n()))
+
+#total area of QOZ, by state
+area_by_state <- us.oz.sf %>% 
+  mutate(area = st_area(.)) %>% 
+  st_set_geometry(NULL) %>% 
+  group_by(state, QOZ) %>% 
+  summarize(area = set_units(sum(area),km^2)) 
+
+# plot distribution of QOZ by state
+d %>% filter(QOZ != "NO") %>% group_by(state) %>% ggplot(., aes(x=state)) + 
+  geom_bar(aes(y = (..count..)),fill="orange", alpha=0.6) + 
+  geom_text(aes(y = (..count..) ,label =   ifelse((..count..)==0,"",scales::percent((..count..)/sum(..count..)))), stat="count",colour="darkgreen") + 
+  theme_bw() +
+  xlab("Designation") +
+  ylab("Frequency") + 
+  ggtitle("Distribution of Designated Tracts by State") +
+  coord_flip()
+
+# plot stacked QOZ by state (how to reoder)
+d %>% mutate(QOZ = as.factor(QOZ)) %>% group_by(state) %>% summarize(frq =  mean(as.numeric(QOZ))) %>% mutate(x = forcats::fct_reorder(state, frq)) %>% 
+  ggplot(aes(x, fill = frq))+
+  geom_bar(position="fill") +
+  scale_y_continuous(labels = percent)
+
+data %>% 
+  mutate(x = forcats::fct_reorder(x, as.numeric(z), fun = mean)) %>% 
+  ggplot(aes(x, fill = z)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = percent)
+
+d %>% group_by() %>% arrange() %>% mutate(QOZ = as.factor(QOZ)) %>% ggplot(aes(state, fill=QOZ)) +
+    geom_bar(position="fill")
+
+```
+
+### 6.Spatial Analysis
+```{r}
+#spatial patterns
+
+# ANALYSIS QUESTION -- where OZones more or less likely than non-designated, but eligible LICs to be clustered among other tracts of similar neighborhood characteristics
+- distress index?
+- poverty?
+
+# ANALYSIS QUESTION -- describe spatial patterns of OZones: are different states more or less clustered??
+require("spdep")
+require("magrittr")
+require("map")
+
+# initialize global moran's I function
+globalSA <- function(x,y){
+  d <- as(x[!is.na(st_dimension(x)),], 'Spatial')
+  #set up weight matrix
+  w <- poly2nb(d, row.names=d$NAMES)
+  wm <- nb2mat(w, style='B')
+  
+  #row standardisation of the weights matrix:
+  rwm <- mat2listw(wm, style='W')
+  
+  # Checking if rows add up to 1
+  mat <- listw2mat(rwm)
+  apply(mat, 1, sum)[1:15]
+  vec <-as.numeric(d[y][[1]])
+  p1 <- moran.plot(vec, rwm)
+
+  #compute Moran’s I and do a significance test
+  ww <-  nb2listw(w, style='B')
+
+  #test for significance. 
+  sig <- moran.test(vec, ww, randomisation=FALSE)
+  
+  #Monte Carlo simulation
+  mc <- moran.mc(vec, ww, nsim=99)
+  
+  return(list(vec, rwm, sig,mc))
+}
+
+morans_model <- function(df) {
+  globalSA(df,"OZone")
+}
+
+by_state <- 
+  us.oz.sf %>% 
+  #filter(state %in% c("AL")) %>% 
+  filter(state_code %in% lower48[27:51]) %>% 
+  mutate(OZone = (QOZ == "DESIGNATEDQOZ")) %>% 
+  group_by(state) %>% 
+  nest()
+
+by_state <- by_state %>% 
+  mutate(morans_model = purrr::map(data, morans_model)) 
+
+get_morans.i <- function(df) {
+  return(df[4][[1]]$statistic)
+}
+
+get_p.val <- function(df) {
+  return(df[4][[1]]$p.value)
+}
+
+by_state <- by_state %>% 
+  mutate(morans_i = purrr::map(morans_model, get_morans.i)) %>% 
+  mutate(morans_pval = purrr::map(morans_model, get_p.val))
+
+```
+
+### 7.Temporal Analysis
+```{r}
+#time trends
+
+```
+
+### 8.Regression Analysis
+```{r}
+#outcomes... classification as QOZ
+#2-sample tests, compare LIC/QOZ
+
+```
+
+

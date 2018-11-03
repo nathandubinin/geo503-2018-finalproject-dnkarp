@@ -1,0 +1,509 @@
+---
+title: "geo503-2018-finalproject-dnkarp"
+author: "dnkarp"
+date: "October 25, 2018"
+output: html_document
+---
+
+### 0.Set-up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+### 1.Load libraries
+```{r load libs, message=F, warning=F, results='hide'}
+library(tidyverse)
+library(sf)
+library(maps)
+library(stringr)
+library(tidycensus)
+library(viridis)
+library(tigris)
+library(skimr)
+library(gridExtra)
+library(ggthemes)
+library(purrr)
+library(broom)
+library(data.table)
+
+```
+
+### 2.Load data
+```{r 2a}
+ozones2 <- st_read("data/OpportunityZones2/shp/theme2.shp")
+ozones.raw <- read_csv("../data/OpportunityZones2/Opportunity Zones.csv")
+setDT(ozones.raw)
+
+unique(fips_codes[,2:3])
+stcodes.terr <- c("60","66","69","72","74","78")
+
+unique(fips_codes[,1:2])
+ozones <- ozones.raw %>% mutate("state_code"=substr(ozones.raw$GEOID10,1,2)) %>% merge(data.frame(unique(fips_codes[,1:2])),by="state_code")
+stcodes.51 <- unique(fips_codes$state_code[!(fips_codes$state_code %in% stcodes.terr)])
+
+ozones.51 <- ozones[substr(ozones$GEOID10,1,2) %in% stcodes.51,]
+ozones.terr <- ozones[substr(ozones$GEOID10,1,2) %in% stcodes.terr,]
+
+unique(ozones.51$STATENAME)
+unique(ozones.51$state_code)
+
+statelist <- unique(fips_codes[fips_codes$state_code %in% stcodes.51,"state"])
+
+```
+
+### 3.Select variables
+```{r 3a}
+# look at raw data import
+names(data.import)
+str(data.import)
+
+# count obs with no ZIP code
+data.import %>% filter(Zip.Code == "0") %>% count()
+
+# select, rename variables, and drop obs w/ missing ZIP codes
+dt.select <- data.import %>% 
+  filter(Zip.Code != "0") %>% 
+  select(
+    Year, 
+    City, 
+    County, 
+    Zip.Code,
+    People=..People,
+    Elderly=..Elderly,
+    Age.of.Home,
+    Occupancy.Type,
+    Housing.Type,
+    Total.Floor.Area,
+    Blower.Pre=Blower.Door.Reading..Pre.,
+    Blower.Post=Blower.Door.Reading..Post.,
+    Percent.Reduction,
+    Total.Material.Costs
+  )
+
+```
+
+### 4.Format case level dataset
+```{r 4a}
+# reformat City/County variables; drop obs with negative or '99999' blower values
+
+summary(dt.select$Housing.Type)
+summary(dt.select$Occupancy.Type)
+summary(dt.select$Age.of.Home)
+summary(subset(dt.select,Age.of.Home>100)$Age.of.Home)
+
+skim(dt.select)
+
+dt.select %>% filter(Blower.Post == 99999) %>% count()
+dt.select %>% filter(Blower.Pre <= 0) %>% count()
+dt.select %>% filter(Blower.Post == 99999) %>% count()
+dt.select %>% filter(Blower.Pre <= 0) %>% count()
+
+dt.clean <- dt.select %>% mutate(City.chr = as.character(City)) %>% 
+                          mutate(Zip.chr = as.character(Zip.Code)) %>% 
+                          mutate(County.chr = as.character(County)) %>% 
+                          mutate(County.chr = substr(County.chr,2,nchar(County.chr))) %>% 
+                          separate(County.chr, c("County.num","County.nam"),sep = "\\) ") %>% 
+                          filter(grepl("^[A-Za-z]+$", substr(City.chr,1,1))) %>% 
+                          mutate(Housing.Type = toupper(Housing.Type)) %>%
+                          filter(grepl("[[:alpha:]]", Housing.Type)) %>%
+                          mutate(Housing.Type = as.factor(Housing.Type)) %>% 
+                          mutate(Occupancy.Type = as.factor(Occupancy.Type)) %>% 
+                          filter(Blower.Post != 99999) %>% 
+                          filter(Blower.Post >= 0) %>% 
+                          filter(Blower.Pre != 99999) %>% 
+                          filter(Blower.Pre >= 0)
+nrow(dt.select)
+nrow(dt.clean)
+
+str(dt.clean)
+
+summary(dt.clean$Housing.Type)
+summary(dt.clean$Occupancy.Type)
+
+skim(dt.clean)
+
+```
+
+### 5.Format ZIP code level dataset
+```{r 5a}
+# continguous variables sum median, mean?
+
+# categorical variables count, percent dummies?
+
+```
+
+### 6.Format county level dataset
+```{r 6a}
+# continguous variables sum median, mean?
+
+# categorical variables count, percent dummies?
+
+
+```
+
+### 7.Load spatial data
+```{r 7a}
+
+# install census api key
+key <- "e7051ec917473383ba64a0c65d7090fa5cc10cf4"
+census_api_key(key, overwrite = FALSE, install = FALSE)
+
+# load variables
+v16 <- load_variables(2016, "acs5", cache = TRUE)
+v16 %>% select(name, label) %>% filter(grepl("Total", label))
+
+us <- unique(fips_codes$state)[1:51]
+
+library(sf)
+options(tigris_use_cache = TRUE)
+
+totalpop_sf <- reduce(
+  map(us, function(x) {
+    get_acs(geography = "tract", variables = "B01003_001", 
+            state = x, geometry = TRUE)
+  }), 
+  rbind
+)
+
+str(totalpop_sf)
+
+# load US census tracts (with total population data for 2016)
+us.tracts <- get_acs(geography = "tract", year = 2016,
+                  variables = "B00001_001", state = "PA", geometry = T, keep_geo_vars = T)
+
+
+
+
+
+# load Ohio counties (with total population for 2013)
+ohio.counties <- get_acs(state = "OH", geography = "county", year = 2013,
+                  variables = "B00001_001", geometry = TRUE)
+
+# union counties into state boundary
+ohio.state <- st_sf(st_union(ohio.counties))
+
+ohio.zipcodes.vector <- st_join(st_centroid(us.zipcodes), ohio.counties) %>% filter(GEOID.y != "NA") %>% select(GEOID.x) %>% st_set_geometry(NULL)
+
+ohio.zipcodes <- us.zipcodes %>% filter(GEOID %in% ohio.zipcodes.vector[[1]])
+
+if(F){
+plot(st_geometry(ohio.zipcodes))
+plot(st_geometry(ohio.counties))
+plot(st_geometry(ohio.state))
+plot(st_geometry(st_centroid(ohio.zipcodes)), pch = 1, col = 'red')
+plot(ohio.zipcodes["estimate"])
+
+
+ohio.zipcodes %>%
+  ggplot(aes(fill = estimate, color = estimate)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "magma") + 
+  scale_color_viridis(option = "magma") +
+  geom_sf(data = ohio.state, fill = NA, color = "grey30", lwd=1)
+}
+```
+
+### 8.Merge attribute data with spatial data
+```{r 8a}
+# merge ZIP code
+names(dt.clean)
+names(ohio.zipcodes)
+
+skim(dt.clean$Zip.chr)
+skim(ohio.zipcodes$GEOID)
+
+dt.ohio.zipcodes <- merge(ohio.zipcodes, dt.clean, by.x = "GEOID", by.y = "Zip.chr")
+
+if(F){
+gp <- dt.ohio.zipcodes %>%
+  group_by(GEOID) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(fill = n, color = n)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "magma") + 
+  scale_color_viridis(option = "magma") +
+  geom_sf(data = ohio.state, fill = NA, color = "grey30", lwd=1)
+
+gp +
+    geom_sf(data = ohio.counties, fill = NA, color = "white", lwd=0.5)
+}
+
+# merge county
+names(dt.clean)
+names(ohio.counties)
+
+skim(dt.clean$County.num)
+skim(ohio.counties$GEOID)
+
+ohio.clean <- ohio.counties %>% 
+  separate(NAME, c("County.nam"),sep = " ")
+
+dt.ohio.counties <- merge(ohio.clean, dt.clean, by = "County.nam")
+
+if(F){
+gp.county <- dt.ohio.counties %>%
+  group_by(GEOID) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(fill = n, color = n)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "magma") + 
+  scale_color_viridis(option = "magma") +
+  geom_sf(data = ohio.state, fill = NA, color = "grey30", lwd=1)
+
+gp.county
+}
+
+```
+
+### 9.Descriptive statistics
+```{r 9a}
+# merge ZIP code
+
+# merge county
+
+```
+
+#### 10.Distribution of independent variables (continuous)
+```{r 10a}
+# Generate boxplots
+
+```
+
+#### 11.Distribution of independent variables (categorical)
+```{r 11a}
+# Generate bar charts
+
+```
+
+#### 12.Distribution of dependent (response) variable
+```{r 12a}
+# Generate boxplots
+
+```
+
+### 13.Get state totals
+```{r 13a}
+
+```
+
+### 14.Time series analysis
+```{r 14a}
+
+```
+
+### 15.Generate neighbors matrix
+```{r 15a}
+
+```
+
+### 16.Get area, neighbor totals
+```{r 16a}
+
+```
+
+### 17.Map data
+```{r 17a}
+if(F){
+dt.ohio.counties %>%
+  group_by(GEOID, Occupancy.Type) %>% 
+  ggplot(aes(fill = Blower.Pre, color = Blower.Pre)) +
+  facet_wrap(~Occupancy.Type) +
+  geom_sf()
+}
+
+n = nrow(dt.ohio.counties)
+c = sum(dt.ohio.counties$Total.Material.Costs, na.rm = T)
+  
+settheme <-   
+  theme_minimal() +
+  theme(axis.ticks = element_blank()
+        , axis.text.x = element_blank()
+        , axis.text.y = element_blank()
+        , plot.title = element_text(size = 8)
+#        , legend.key.size = unit(1,"cm")
+        )
+
+gp.counties <- dt.ohio.counties %>%
+  group_by(GEOID) %>% 
+  summarise(
+            pct = n()/n
+          , Blwr.Pre = mean(Blower.Pre)
+          , Blwr.Post = mean(Blower.Post)
+          , Pct.Red.Avg = mean(Percent.Reduction)
+          , Cost = sum(Total.Material.Costs)
+          , Cost.pct = Cost/c
+          , Cost.avg = mean(Total.Material.Costs))
+
+gp.counties <- gp %>% mutate(Cost.pct2 = (Cost.pct*10000)) %>% mutate(pct2 = (pct*1000))
+
+gp.zipcodes <- dt.ohio.zipcodes %>%
+  group_by(GEOID) %>% 
+  summarise(
+            pct = n()/n
+          , Blwr.Pre = mean(Blower.Pre)
+          , Blwr.Post = mean(Blower.Post)
+          , Pct.Red.Avg = mean(Percent.Reduction)
+          , Cost = sum(Total.Material.Costs)
+          , Cost.pct = Cost/c
+          , Cost.avg = mean(Total.Material.Costs))
+
+gp.zipcodes <- gp.zipcodes %>% mutate(Cost.pct2 = (Cost.pct*100000)) %>% mutate(pct2 = (pct*10000))
+
+plot.maps <- function(gp) {
+
+p1 <- gp %>% 
+  ggplot(aes(fill = pct2)) +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("pct2", labels = scales::comma) +
+  ggtitle("Percent of statewide recipients") +
+  settheme
+
+p2 <- gp %>% 
+  ggplot(aes(fill = Blwr.Pre)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Blwr.Pre", labels = scales::comma) +
+  ggtitle("Avg blower test before") +
+  settheme
+
+p3 <- gp %>% 
+  ggplot(aes(fill = Blwr.Post)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Blwr.Post", labels = scales::comma) +
+  ggtitle("Avg blower test after") +
+  settheme
+
+p4 <- gp %>% 
+  filter(Pct.Red.Avg > 0) %>% 
+  ggplot(aes(fill = Pct.Red.Avg)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Pct.Red.Avg", labels = scales::comma) +
+  ggtitle("Avg % reduction in blower test") +
+  settheme
+
+p5 <- gp %>% 
+  ggplot(aes(fill = Cost)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Cost", labels = scales::comma) +
+  ggtitle("Total material expenses") +
+  settheme
+
+p6 <- gp %>% 
+  ggplot(aes(fill = Cost.pct2)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Cost.pct2", labels = scales::comma) +
+  ggtitle("Percent of statewide material expenses") +
+  settheme
+
+p7 <- gp %>% 
+  ggplot(aes(fill = Cost.avg)) +
+  geom_sf() +
+  geom_sf(lwd = 0) +
+  scale_fill_viridis("Cost.avg", labels = scales::comma) +
+  ggtitle("Average material expenses") +
+  settheme
+
+return(list(p1,p2,p3,p4,p5,p6,p7))
+
+}
+
+plots.counties <- plot.maps(gp.counties)
+plots.zipcodes <- plot.maps(gp.zipcodes)
+
+grid.arrange(
+  grobs = plots.counties,
+  widths = c(1, 1, 1, 1),
+  layout_matrix = rbind(c(1, 2, 3, 4),
+                        c(5, 6, 7, NA))
+)
+
+grid.arrange(
+  grobs = plots.zipcodes,
+  widths = c(1, 1, 1, 1),
+  layout_matrix = rbind(c(1, 2, 3, 4),
+                        c(5, 6, 7, NA))
+)
+
+
+```
+
+### 18.Test and plot correlations
+```{r 18a}
+names(dt.ohio.zipcodes)
+
+dt.ohio.zipcodes %>% 
+  filter(Percent.Reduction>0) %>% 
+  group_by(GEOID) %>% 
+  ggplot(aes(x = Percent.Reduction)) +
+  geom_density()
+
+dt.ohio.zipcodes[,c("Blower.Pre","Blower.Post")] %>% 
+  gather(x,reading,c("Blower.Pre","Blower.Post")) %>% 
+  filter(reading<10000) %>% 
+  ggplot(aes(x=reading, fill=x)) + geom_density(alpha=0.25)
+
+dt.ohio.zipcodes[,c("Percent.Reduction","Housing.Type")] %>% 
+  filter(Percent.Reduction>0) %>% 
+  ggplot(aes(x=Housing.Type, y=Percent.Reduction, fill=Housing.Type)) + geom_boxplot(alpha=0.25)
+
+y1<-dt.ohio.zipcodes$Blower.Pre
+y2<-dt.ohio.zipcodes$Blower.Post
+t.test(y1,y2,paired=TRUE)
+
+dt.ohio.zipcodes %>% filter(Percent.Reduction>0) %>% ggplot(aes(x=Year, y=Blower.Pre, group=Year)) + geom_boxplot()
+
+```
+
+### 19.Estimate linear model
+```{r 19a}
+
+```
+
+### 20.Test for spatial autocorrelation
+```{r 20a}
+# global
+
+# local
+
+```
+
+### 21.Map clusters / hot-spot analysis
+```{r 21a}
+
+```
+
+### 22.Describe eligbility criteria 
+```{r 22a}
+
+```
+
+### 23.Get area demographics 
+```{r 23a}
+# tidycensus
+
+```
+
+### 24.Classify areas 
+```{r 24a}
+# likely to have high exposure
+
+# likely to receive assistance
+
+# likely to see improvement
+
+# likely to have high consumption (relative to house size?)
+
+# likely to have high energy cost burden (relative to area income?)
+
+```
+
+### X.Save workspace 
+```{r 24a}
+save.image("energy_poverty_data_working.RData")
+
+```

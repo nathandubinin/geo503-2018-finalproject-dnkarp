@@ -3,10 +3,14 @@ type: inverse
 left:
   - text: "Home"
     href: index.html
-  - text: "Final Project"
-    href: project.html
-  - text: "Proposal"
-    href: proposal.html
+  - text: "Project"
+    menu:
+      - text: "Proposal"
+        href: proposal.html
+      - text: "First Draft"
+        href: draft.html
+      - text: "Final Project"
+        href: project.html
   - text: "Data"
     href: data.html
   - text: "Resources"
