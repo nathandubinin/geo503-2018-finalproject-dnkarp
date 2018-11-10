@@ -6,37 +6,44 @@ output: html_document
 #Problem Statement
 ##Background
 In 2017, the Trump Administration passed the Tax Cuts and Jobs Act, authorizing the establishment of new "Opportunity Zones" (OZ) -- offering a new type of tax-incentive to target private equity investments into distressed communities. Of the XXX low-income community (LIC) census tracts eligible, 8,700 8,700 were selected by state officials, and approved by the US Treasury.  This program purports to offer an unprecedented level of opportunity for new investment aimed at community and economic development, with an estimated $X Trillion in capital elligible for this type of tax-exemption. Social impact funds, community development financial institutions, and state and local agencies across the country are now mobilizing to attract private funding, and to green-light shovel ready development projects. However, with this new rush to reinvest and redevelopment are myriad concerns about how to manage new investment, how to prioritize community needs, and how to stave off negative effects associated with gentrification, displacement, and affordability. The Federal government has issued minimal guidance, and in the absence of and rules and regulations, many communities feel that the program may ultimately serve developers and investors, rather than the communities and people living in the OZ neighborhoods.
+
 ##Objective
-The goal of this project is to (1) examine the spatial distribution of the designated OZ tract, (2) compare selected versus eligible but not selected tracts, and (3) assess the variation in the level of 'need', based on varying definitions of 'area median income', compared to Federal criteria used to classify LIC tracts, (4) evaluate the potential for investment based on prior social impact investments made through the New Markets Tax Credit (NMTC) program, and (5) classify and subset OZ tracts based on upward or downward trajectory in terms of recent demographic and economic change. OZ tracts were chosen by state officials, with minimal required selection critieria. Without knowing the exact critieria used in each state, this analysis serves to deescribe the ultimate outcome of those selection processes, to present an overview of these investment-eligible communities, and to consider some of the variables relevant to evaluating the potential impact of the OZ program.
+The goal of this project is to:
+
+  1. examine the spatial distribution of the designated OZ tract, 
+  2. compare selected versus eligible but not selected tracts, 
+  3. assess the variation in the level of 'need', based on varying definitions of 'area median income', compared to Federal criteria used to classify LIC tracts, 
+  4. evaluate the potential for investment based on prior social impact investments made through the New Markets Tax Credit (NMTC) program, and 
+  5. classify and subset OZ tracts based on upward or downward trajectory in terms of recent demographic and economic change. OZ tracts were chosen by state officials, with minimal required selection critieria. Without knowing the exact critieria used in each state, this analysis serves to deescribe the ultimate outcome of those selection processes, to present an overview of these investment-eligible communities, and to consider some of the variables relevant to evaluating the potential impact of the OZ program.
+
 ##Definitions
   * Low-Income Community (LIC)
   LIC census tracts have an individual poverty rate of 20% or more, AND median family income up to 80% percent of the area median (area = state or metro). [definitions established in the American Jobs Creation Act of 2004]
-  *Opportunity Zone (OZ)
+  * Opportunity Zone (OZ)
   Every state can designate up to 25% of its eligible census tracts
-  *Exception
+  * Exception
   5% of non-LIC tracts may be eligible if contiguous with a LIC designated OZ tract (LIC-OZ), AND median family income does not exceed 125% of the median family income of the contiguous LIC-OZ tract. 
-##Next Steps
-Exploring social impact investment
-  *Number of CDFIs, CDEs, CDCs opporating in the region?
-  *Number of impact investment funds?
-  *Indicators of development:
-    -workforce education/development, 
-    -workforce diversity, 
-    -neighborhood revitalization, 
-    -health and environment friendly, and
-    -job creation.
-  *Indicator of public investment:
+  
+##Exploring social impact investments
+  * Number of CDFIs, CDEs, CDCs opporating in the region?
+  * Number of impact investment funds?
+  * Indicators of development:
+    - workforce education/development, 
+    - workforce diversity, 
+    - neighborhood revitalization, 
+    - health and environment friendly, and
+    - job creation.
+  * Indicator of public investment:
     -new bond issuance
     -spending per capita
 
 #Analysis
-#0.Set-up
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-#1.Load libraries
+##1.Load libraries
 ```{r load libs, message=F, warning=F, cache=T, results='hide'}
 
 #uncomment the next line in order to install missing packages
@@ -68,7 +75,7 @@ library(ggpubr)
 
 ```
 
-#2.Load cleaned data
+##2.Load cleaned data
 ```{r 2a download + load csv data, message=F, warning=F, cache=T}
 
 # load OZ data frame (50 states + DC, territories exluded)
@@ -97,7 +104,7 @@ us.st.acs.rt16 <- readRDS("data/us_st_acs_rt16.rds")
 
 ```
 
-#3.Merge attribute data with spatial data
+##3.Merge attribute data with spatial data
 ```{r 3 merge attribute data, cache=T}
 
 # merge (left join) 'Opportunity Zones' to sf tracts dataframe ; merge NMTC data and ACS attributes to Ozone tracts sf df
@@ -123,8 +130,8 @@ sfdf <- merge(tracts.sf, ozones.51[,-c("state","state_code")], by.x = "GEOID", b
 
 ```
 
-#4.Descriptive analysis
-##4a.National and State Distribution
+##4.Descriptive analysis
+###4a.National and State Distribution
 ```{r 4a national and state descriptive tables/charts, cache=T}
 
 # two-way table of eligibility and designation
@@ -146,7 +153,7 @@ sfdf %>%
 
 ```                     
 
-##4b.Compare OZ and Non-OZ-LIC pt1
+###4b.Compare OZ and Non-OZ-LIC pt1
 ```{r 4b Compare OZ and Non-OZ-LIC pt1, message=F, warning=F, cache=T}
 
 # select dataset: remove geometry (increase process speed), filter by LIC only, add area/density variables
@@ -190,7 +197,7 @@ d %>% ggplot(aes(PovRt.trct, color = OZ)) +
   
 ```                     
 
-##4c.Compare OZ and Non-OZ-LIC pt2
+###4c.Compare OZ and Non-OZ-LIC pt2
 ```{r 4c Compare OZ and Non-OZ-LIC pt2,  message=F, warning=F, cache=T}
 
 # review distribution of variables
