@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>An Analysis Federal Opportunity Zones &amp; Low-income Communities</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 41px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+
+.section h2 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h3 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h4 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h5 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+.section h6 {
+  padding-top: 46px;
+  margin-top: -46px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Data Science Fall 2018</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Project
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="proposal.html">Proposal</a>
+    </li>
+    <li>
+      <a href="draft_pt1.html">Processing(draft)</a>
+    </li>
+    <li>
+      <a href="draft_pt2.html">Analysis(draft)</a>
+    </li>
+    <li>
+      <a href="final_pt1.html">Processing(final)</a>
+    </li>
+    <li>
+      <a href="final_pt2.html">Analysis(final)</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="data.html">Data</a>
+</li>
+<li>
+  <a href="resources.html">Resources</a>
+</li>
+<li>
+  <a href="contact.html">Contact</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/dnkarp">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">An Analysis Federal Opportunity Zones &amp; Low-income Communities</h1>
+
+</div>
+
+
+<div id="problem-statement" class="section level1">
+<h1>Problem Statement</h1>
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>In 2017, the Trump Administration passed the Tax Cuts and Jobs Act, authorizing the establishment of new “Opportunity Zones” (OZ) – offering a new type of tax-incentive to target private equity investments into distressed communities. Of the XXX low-income community (LIC) census tracts eligible, 8,700 8,700 were selected by state officials, and approved by the US Treasury. This program purports to offer an unprecedented level of opportunity for new investment aimed at community and economic development, with an estimated $X Trillion in capital elligible for this type of tax-exemption. Social impact funds, community development financial institutions, and state and local agencies across the country are now mobilizing to attract private funding, and to green-light shovel ready development projects. However, with this new rush to reinvest and redevelopment are myriad concerns about how to manage new investment, how to prioritize community needs, and how to stave off negative effects associated with gentrification, displacement, and affordability. The Federal government has issued minimal guidance, and in the absence of and rules and regulations, many communities feel that the program may ultimately serve developers and investors, rather than the communities and people living in the OZ neighborhoods. ##Objective The goal of this project is to (1) examine the spatial distribution of the designated OZ tract, (2) compare selected versus eligible but not selected tracts, and (3) assess the variation in the level of ‘need’, based on varying definitions of ‘area median income’, compared to Federal criteria used to classify LIC tracts, (4) evaluate the potential for investment based on prior social impact investments made through the New Markets Tax Credit (NMTC) program, and (5) classify and subset OZ tracts based on upward or downward trajectory in terms of recent demographic and economic change. OZ tracts were chosen by state officials, with minimal required selection critieria. Without knowing the exact critieria used in each state, this analysis serves to deescribe the ultimate outcome of those selection processes, to present an overview of these investment-eligible communities, and to consider some of the variables relevant to evaluating the potential impact of the OZ program. ##Definitions * Low-Income Community (LIC) LIC census tracts have an individual poverty rate of 20% or more, AND median family income up to 80% percent of the area median (area = state or metro). [definitions established in the American Jobs Creation Act of 2004] <em>Opportunity Zone (OZ) Every state can designate up to 25% of its eligible census tracts </em>Exception 5% of non-LIC tracts may be eligible if contiguous with a LIC designated OZ tract (LIC-OZ), AND median family income does not exceed 125% of the median family income of the contiguous LIC-OZ tract. ##Next Steps Exploring social impact investment <em>Number of CDFIs, CDEs, CDCs opporating in the region? </em>Number of impact investment funds? <em>Indicators of development: -workforce education/development, -workforce diversity, -neighborhood revitalization, -health and environment friendly, and -job creation. </em>Indicator of public investment: -new bond issuance -spending per capita</p>
+</div>
+</div>
+<div id="analysis" class="section level1">
+<h1>Analysis</h1>
+</div>
+<div id="set-up" class="section level1">
+<h1>0.Set-up</h1>
+</div>
+<div id="load-libraries" class="section level1">
+<h1>1.Load libraries</h1>
+<pre class="r"><code>#uncomment the next line in order to install missing packages
+#install.packages(c(&quot;tidyverse&quot;, &quot;broom&quot;, &quot;data.table&quot;, &quot;purrr&quot;, &quot;stringr&quot;, &quot;skimr&quot;, &quot;units&quot;, &quot;sf&quot;, &quot;maps&quot;, &quot;albersusa&quot;, &quot;viridis&quot;, &quot;gridExtra&quot;, &quot;ggthemes&quot;, &quot;cowplot&quot;, &quot;tableone&quot;, &quot;ggpubr&quot;))
+
+# data wrangling libs
+library(tidyverse)
+library(broom)
+library(data.table)
+library(purrr)
+library(stringr)
+
+# data analysis
+library(skimr)
+library(units)
+library(tableone)
+
+# spatial libs
+library(sf)
+library(maps)
+library(albersusa)
+
+# graphics/viz libs
+library(viridis)
+library(gridExtra)
+library(ggthemes)
+library(cowplot)
+library(ggpubr)</code></pre>
+</div>
+<div id="load-cleaned-data" class="section level1">
+<h1>2.Load cleaned data</h1>
+<pre class="r"><code># load OZ data frame (50 states + DC, territories exluded)
+ozones.51 &lt;- readRDS(&quot;data/ozones_51.rds&quot;)
+
+# load US census tracts sf data frame
+tracts.sf &lt;- readRDS(&quot;data/tracts_sf.rds&quot;)
+
+# load US counties sf data frame
+counties.sf &lt;- readRDS(&quot;data/counties_sf.rds&quot;)
+
+# load US states sf data frame
+states.sf &lt;- readRDS(&quot;data/states_sf.rds&quot;)
+
+# load nmtc tract data
+nmtc.tract &lt;- readRDS(&quot;data/nmtc_tract.rds&quot;)
+
+# load tract census attributes
+us.trcts.acs.rt16 &lt;- readRDS(&quot;data/us_trcts_acs_rt16.rds&quot;)
+
+# load county census attributes
+us.cnty.acs.rt16 &lt;- readRDS(&quot;data/us_cnty_acs_rt16.rds&quot;)
+
+# load state census attributes
+us.st.acs.rt16 &lt;- readRDS(&quot;data/us_st_acs_rt16.rds&quot;)</code></pre>
+</div>
+<div id="merge-attribute-data-with-spatial-data" class="section level1">
+<h1>3.Merge attribute data with spatial data</h1>
+<pre class="r"><code># merge (left join) &#39;Opportunity Zones&#39; to sf tracts dataframe ; merge NMTC data and ACS attributes to Ozone tracts sf df
+sfdf &lt;- merge(tracts.sf, ozones.51[,-c(&quot;state&quot;,&quot;state_code&quot;)], by.x = &quot;GEOID&quot;, by.y = &quot;GEOID10&quot;, all.x) %&gt;% # merge OZ designations to lower 48 tracts sf data frame
+  select(-c(variable,estimate,moe)) %&gt;% 
+  merge(nmtc.tract, by=&quot;GEOID&quot;, all.x=T) %&gt;% # merge NMTC data to tracts
+  merge(us.trcts.acs.rt16,by=&quot;GEOID&quot;, all.x=T) %&gt;% # merge ACS varaibles (cleaned 2016 rates)
+  mutate(CountyFIPS=substr(GEOID,1,5)) %&gt;% 
+  merge(us.cnty.acs.rt16[,c(&quot;GEOID&quot;,&quot;PovRt&quot;,&quot;MdnInc&quot;)], by.x=&quot;CountyFIPS&quot;,by.y=&quot;GEOID&quot;, all.x=T) %&gt;% # merge country level variables to tracts
+  rename(PovRt.trct = PovRt.x) %&gt;% 
+  rename(MdnInc.trct = MdnInc.x) %&gt;% 
+  rename(PovRt.cnty = PovRt.y) %&gt;% 
+  rename(MdnInc.cnty = MdnInc.y) %&gt;% 
+  mutate(StateFIPS=substr(GEOID,1,2)) %&gt;% 
+  merge(us.st.acs.rt16[,c(&quot;GEOID&quot;,&quot;PovRt&quot;,&quot;MdnInc&quot;)], by.x=&quot;StateFIPS&quot;,by.y=&quot;GEOID&quot;, all.x=T) %&gt;% # merge state level variables to tracts
+  rename(PovRt.st = PovRt) %&gt;% 
+  rename(MdnInc.st = MdnInc) %&gt;% 
+  mutate(PovRatio.cnty = PovRt.trct/PovRt.cnty) %&gt;% 
+  mutate(PovRatio.st = PovRt.trct/PovRt.st) %&gt;% 
+  mutate(MdnIncRatio.cnty = MdnInc.trct/MdnInc.cnty) %&gt;% 
+  mutate(MdnIncRatio.st = MdnInc.trct/MdnInc.st) %&gt;% 
+  mutate(OZ = factor(ifelse(QOZ==&quot;DESIGNATEDQOZ&quot;, &quot;OZone&quot;, ifelse(TYPE==&quot;LIC&quot;, &quot;Non-OZ LIC&quot;, &quot;Non-LIC&quot;))))</code></pre>
+</div>
+<div id="descriptive-analysis" class="section level1">
+<h1>4.Descriptive analysis</h1>
+<div id="a.national-and-state-distribution" class="section level2">
+<h2>4a.National and State Distribution</h2>
+<pre class="r"><code># two-way table of eligibility and designation
+table(sfdf$QOZ,sfdf$TYPE) #counts</code></pre>
+<pre><code>##                
+##                 CONTIGUOUS   LIC    NO
+##   DESIGNATEDQOZ        195  7561    17
+##   NO                 10022 23209 31510</code></pre>
+<pre class="r"><code>prop.table(table(sfdf$QOZ,sfdf$TYPE)) #proportions</code></pre>
+<pre><code>##                
+##                   CONTIGUOUS          LIC           NO
+##   DESIGNATEDQOZ 0.0026891359 0.1042695204 0.0002344375
+##   NO            0.1382077944 0.3200623328 0.4345367791</code></pre>
+<pre class="r"><code># bar chart: state level distribution of tract designation/eligibility (sorted by % OZ)
+sfdf %&gt;% 
+  st_set_geometry(NULL) %&gt;% 
+  group_by(state) %&gt;% 
+  summarise(n = n(), OZone = sum(OZ == &quot;OZone&quot;)/n,LIC = sum(OZ == &quot;Non-OZ LIC&quot;)/n,NonLIC = sum(OZ == &quot;Non-LIC&quot;)/n) %&gt;% 
+  mutate(state = factor(state, levels = state[order(OZone)])) %&gt;% 
+  gather(key = &quot;OZdesignation&quot;, value = &quot;n.tracts&quot;, OZone, LIC, NonLIC) %&gt;% 
+  ggplot(aes(x = state, y = n.tracts, fill = factor(OZdesignation, levels = c(&quot;NonLIC&quot;,&quot;LIC&quot;,&quot;OZone&quot;)))) + 
+  theme_bw() + geom_bar(stat = &quot;identity&quot;) + 
+  ylab(&quot;% of state tracts&quot;) + 
+  labs(fill = &quot;Census Tract\nEligibility/Designation&quot;) + 
+  scale_fill_manual(values=c(&quot;grey&quot;,&quot;blue&quot;,&quot;dark blue&quot;))</code></pre>
+<p><img src="draft_pt2_files/figure-html/4a%20national%20and%20state%20descriptive%20tables/charts-1.png" width="672" /></p>
+</div>
+<div id="b.compare-oz-and-non-oz-lic-pt1" class="section level2">
+<h2>4b.Compare OZ and Non-OZ-LIC pt1</h2>
+<pre class="r"><code># select dataset: remove geometry (increase process speed), filter by LIC only, add area/density variables
+d &lt;- sfdf %&gt;% 
+  mutate(area = set_units(st_area(.),mi^2)) %&gt;% 
+  st_set_geometry(NULL) %&gt;% 
+  mutate(QOZ = as.factor(QOZ)) %&gt;%  #set QOZ as factor 
+  filter(QOZ==&quot;DESIGNATEDQOZ&quot; | TYPE == &quot;LIC&quot;) %&gt;% #restrict to LIC (low-income communities == QOZ eligible)
+  mutate(OZ = factor(OZ)) %&gt;% 
+  mutate(popdens = as.double(Pop/area)) %&gt;% 
+  mutate(prjdens = as.double(n.prj/area)) %&gt;% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+#table one, compare all variables between OZ and Non-OZ-LIC (ChiSquared tests are used for categorical variables; One-way ANOVA tests are used for continuous variables)
+
+# demographic mix
+tableOne1 &lt;- CreateTableOne(strata = &quot;OZ&quot;, vars = c(&quot;Pop&quot;,&quot;popdens&quot;,&quot;PovRt.trct&quot;,&quot;MdnInc.trct&quot;,&quot;UnemplRt&quot;,&quot;VacRt&quot;,&quot;RentRt&quot;,&quot;GrEduRt&quot;,&quot;ColEduRt&quot;,&quot;PctWhite&quot;), data = d)
+tableOne1</code></pre>
+<pre><code>##                          Stratified by OZ
+##                           Non-OZ LIC          OZone               p     
+##   n                          23209                7773                  
+##   Pop (mean (sd))          4055.10 (1871.30)   4012.09 (1951.32)   0.083
+##   popdens (mean (sd))      7808.37 (16176.23)  6496.53 (14032.54) &lt;0.001
+##   PovRt.trct (mean (sd))      0.25 (0.12)         0.30 (0.13)     &lt;0.001
+##   MdnInc.trct (mean (sd)) 47127.15 (15702.20) 42296.51 (15710.24) &lt;0.001
+##   UnemplRt (mean (sd))        0.10 (0.06)         0.12 (0.07)     &lt;0.001
+##   VacRt (mean (sd))           0.14 (0.10)         0.15 (0.10)     &lt;0.001
+##   RentRt (mean (sd))          0.49 (0.22)         0.55 (0.22)     &lt;0.001
+##   GrEduRt (mean (sd))         0.06 (0.06)         0.05 (0.05)     &lt;0.001
+##   ColEduRt (mean (sd))        0.12 (0.08)         0.11 (0.07)     &lt;0.001
+##   PctWhite (mean (sd))        0.63 (0.28)         0.58 (0.30)     &lt;0.001
+##                          Stratified by OZ
+##                           test
+##   n                           
+##   Pop (mean (sd))             
+##   popdens (mean (sd))         
+##   PovRt.trct (mean (sd))      
+##   MdnInc.trct (mean (sd))     
+##   UnemplRt (mean (sd))        
+##   VacRt (mean (sd))           
+##   RentRt (mean (sd))          
+##   GrEduRt (mean (sd))         
+##   ColEduRt (mean (sd))        
+##   PctWhite (mean (sd))</code></pre>
+<pre class="r"><code># prior investment
+tableOne2 &lt;- CreateTableOne(strata = &quot;OZ&quot;, vars = c(&quot;metro&quot;,&quot;n.cde&quot;,&quot;n.prj&quot;,&quot;avg.prj.yr&quot;,&quot;ttl.amt.prj&quot;,&quot;avg.amt.prj&quot;,&quot;avg.amt.yr&quot;,&quot;CDE&quot;,&quot;NRE&quot;,&quot;RE&quot;,&quot;SPE&quot;), data = d)
+tableOne2</code></pre>
+<pre><code>##                               Stratified by OZ
+##                                Non-OZ LIC               
+##   n                                  23209              
+##   metro = Non-Metropolitan (%)         269 (17.7)       
+##   n.cde (mean (sd))                   1.18 (0.53)       
+##   n.prj (mean (sd))                   1.33 (1.05)       
+##   avg.prj.yr (mean (sd))              1.04 (0.17)       
+##   ttl.amt.prj (mean (sd))      10075956.56 (14435958.35)
+##   avg.amt.prj (mean (sd))       7800695.30 (9970730.91) 
+##   avg.amt.yr (mean (sd))        8041930.57 (10342919.70)
+##   CDE (mean (sd))                     1.21 (0.41)       
+##   NRE (mean (sd))                     1.21 (0.87)       
+##   RE (mean (sd))                      1.24 (0.71)       
+##   SPE (mean (sd))                     1.03 (0.17)       
+##                               Stratified by OZ
+##                                OZone                     p      test
+##   n                                   7773                          
+##   metro = Non-Metropolitan (%)         217 (17.8)         0.987     
+##   n.cde (mean (sd))                   1.47 (1.01)        &lt;0.001     
+##   n.prj (mean (sd))                   1.85 (2.24)        &lt;0.001     
+##   avg.prj.yr (mean (sd))              1.09 (0.28)        &lt;0.001     
+##   ttl.amt.prj (mean (sd))      16559663.40 (34970583.02) &lt;0.001     
+##   avg.amt.prj (mean (sd))       8770685.10 (9058463.22)   0.009     
+##   avg.amt.yr (mean (sd))        9467412.12 (9886726.96)  &lt;0.001     
+##   CDE (mean (sd))                     1.50 (1.45)         0.361     
+##   NRE (mean (sd))                     1.46 (1.22)        &lt;0.001     
+##   RE (mean (sd))                      1.66 (1.89)        &lt;0.001     
+##   SPE (mean (sd))                     1.07 (0.26)         0.140</code></pre>
+<pre class="r"><code># distressed area criterion
+tableOne3 &lt;- CreateTableOne(strata = &quot;OZ&quot;, vars = c(&quot;PovRatio.cnty&quot;,&quot;PovRatio.st&quot;,&quot;MdnIncRatio.cnty&quot;,&quot;MdnIncRatio.st&quot;,&quot;prjdens&quot;,&quot;invdens&quot;), data = d)
+tableOne3</code></pre>
+<pre><code>##                               Stratified by OZ
+##                                Non-OZ LIC               
+##   n                                  23209              
+##   PovRatio.cnty (mean (sd))           1.50 (0.74)       
+##   PovRatio.st (mean (sd))             1.64 (0.79)       
+##   MdnIncRatio.cnty (mean (sd))        0.76 (0.25)       
+##   MdnIncRatio.st (mean (sd))          0.70 (0.22)       
+##   prjdens (mean (sd))                 3.40 (5.69)       
+##   invdens (mean (sd))          31017055.18 (89512769.45)
+##                               Stratified by OZ
+##                                OZone                      p      test
+##   n                                   7773                           
+##   PovRatio.cnty (mean (sd))           1.80 (0.84)         &lt;0.001     
+##   PovRatio.st (mean (sd))             1.99 (0.91)         &lt;0.001     
+##   MdnIncRatio.cnty (mean (sd))        0.69 (0.27)         &lt;0.001     
+##   MdnIncRatio.st (mean (sd))          0.63 (0.23)         &lt;0.001     
+##   prjdens (mean (sd))                 3.60 (9.12)          0.478     
+##   invdens (mean (sd))          36453811.07 (100467587.44)  0.135</code></pre>
+<pre class="r"><code># compare distribution of Poverty Rate between OZ and Non-OZ LIC
+d %&gt;% ggplot(aes(PovRt.trct, color = OZ)) + 
+  scale_color_manual(values=c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;), 
+                       name=&quot;Census Tract\nDesignation&quot;,
+                       breaks=c(&quot;OZone&quot;,&quot;Non-OZ LIC&quot;),
+                       labels=c(&quot;Designated OZone&quot;, &quot;Non-OZone LIC&quot;)) +
+  geom_density(alpha = 0.4) + 
+  geom_vline(data=data.frame(d[!is.na(d$PovRt.trct),] %&gt;% 
+                               group_by(OZ) %&gt;% 
+                               summarise(grp.mean=mean(PovRt.trct))), 
+    aes(xintercept=grp.mean, color=OZ), 
+    linetype=&quot;dashed&quot;) +
+    xlab(&quot;2016 Poverty Rate&quot;) </code></pre>
+<p><img src="draft_pt2_files/figure-html/4b%20Compare%20OZ%20and%20Non-OZ-LIC%20pt1-1.png" width="672" /></p>
+</div>
+<div id="c.compare-oz-and-non-oz-lic-pt2" class="section level2">
+<h2>4c.Compare OZ and Non-OZ-LIC pt2</h2>
+<pre class="r"><code># review distribution of variables
+#d.skim &lt;- skim(d[23:39])
+
+# plot continuous variables x bin/cat vars &gt;&gt; box plots (statistically significant vars X OZ class)
+
+p1 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;PovRt.trct&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+p2 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;UnemplRt&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+p3 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;VacRt&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+p4 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;GrEduRt&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+p5 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;ColEduRt&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+p6 &lt;- ggboxplot(d, x = &quot;OZ&quot;, y = &quot;PctWhite&quot;,
+                 color = &quot;OZ&quot;, palette = &quot;jco&quot;)
+
+ggarrange(p1,p2,p3,p4,p5,p6 + rremove(&quot;x.text&quot;), 
+          labels = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;),
+          ncol = 3, nrow = 2)</code></pre>
+<p><img src="draft_pt2_files/figure-html/4c%20Compare%20OZ%20and%20Non-OZ-LIC%20pt2-1.png" width="672" /></p>
+</div>
+<div id="map-data" class="section level2">
+<h2>5.Map data</h2>
+<pre class="r"><code>noaxis &lt;- theme(
+  axis.title.x=element_blank(),
+  axis.text.x=element_blank(),
+  axis.ticks.x=element_blank(),
+  axis.title.y=element_blank(),
+  axis.text.y=element_blank(),
+  axis.ticks.y=element_blank(),
+  panel.background = element_blank(),
+  legend.title = element_text(size=8),
+  legend.text = element_text(size=8)
+  )
+
+mkmaps &lt;- function(x,y,z,w){
+x %&gt;%
+  filter(state %in% z) %&gt;% 
+  group_by(eval(parse(text=w))) %&gt;% 
+  summarise(value = first(eval(parse(text=y)))) %&gt;% 
+  ggplot(aes(fill = value)) +
+  geom_sf(color = NA, lwd=.5) +
+  labs(fill=y) +
+  geom_sf(data = st_geometry(states.sf[states.sf$state %in% z,]), fill = &quot;transparent&quot;, color = &quot;white&quot;, lwd=.5) +
+  geom_sf(data = st_geometry(x[(x$state %in% z) &amp; x$OZ==&quot;OZone&quot;,]), fill = &quot;transparent&quot;, color = &quot;orange&quot;, lwd=.5) +
+  noaxis %&gt;%
+    return()
+}
+
+#eval(parse(text=y))
+
+s &lt;- sfdf %&gt;% 
+  mutate(area = set_units(st_area(.),mi^2)) %&gt;% 
+  mutate(QOZ = as.factor(QOZ)) %&gt;%  #set QOZ as factor 
+  mutate(popdens = as.double(Pop/area)) %&gt;% 
+  mutate(prjdens = as.double(n.prj/area)) %&gt;% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+tract.qoz.al &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;AL&quot;),&quot;GEOID&quot;)
+tract.qoz.pa &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;PA&quot;),&quot;GEOID&quot;)
+tract.qoz.ny &lt;- s %&gt;% mkmaps(&#39;TYPE&#39;,c(&quot;NY&quot;),&quot;GEOID&quot;)
+
+cowplot::plot_grid(
+  tract.qoz.al,
+  tract.qoz.pa,
+  tract.qoz.ny,
+  nrow = 3
+)</code></pre>
+<p><img src="draft_pt2_files/figure-html/5%20generate%20maps-1.png" width="672" /></p>
+<pre class="r"><code>tract.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.trct&#39;,c(&quot;AL&quot;),&#39;GEOID&#39;)
+county.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.cnty&#39;,c(&quot;AL&quot;),&#39;CountyFIPS&#39;)
+state.povrt.map &lt;- s %&gt;% mkmaps(&#39;PovRt.st&#39;,c(&quot;AL&quot;,&quot;MS&quot;),&#39;StateFIPS&#39;)
+
+cowplot::plot_grid(
+  tract.povrt.map,
+  county.povrt.map,
+  state.povrt.map,
+  nrow = 3
+)</code></pre>
+<p><img src="draft_pt2_files/figure-html/5%20generate%20maps-2.png" width="672" /></p>
+</div>
+<div id="regression-analysis" class="section level2">
+<h2>6.Regression Analysis</h2>
+<pre class="r"><code>#outcomes... classification as QOZ
+#2-sample tests, compare LIC/QOZ
+chisq.test(table(d$QOZ, d$PovRt.trct)) </code></pre>
+<pre><code>## Warning in chisq.test(table(d$QOZ, d$PovRt.trct)): Chi-squared
+## approximation may be incorrect</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(d$QOZ, d$PovRt.trct)
+## X-squared = 30523, df = 30471, p-value = 0.4154</code></pre>
+<pre class="r"><code>summary((glm(QOZ~Pop + PovRt.trct + MdnInc.trct + UnemplRt + VacRt + RentRt + ColEduRt + GrEduRt + PctWhite, data=d, family=binomial())))</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = QOZ ~ Pop + PovRt.trct + MdnInc.trct + UnemplRt + 
+##     VacRt + RentRt + ColEduRt + GrEduRt + PctWhite, family = binomial(), 
+##     data = d)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.1893  -0.7470   0.6553   0.7660   2.1590  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.969e+00  1.205e-01  24.648  &lt; 2e-16 ***
+## Pop         -4.260e-05  7.566e-06  -5.631 1.80e-08 ***
+## PovRt.trct  -2.131e+00  1.641e-01 -12.990  &lt; 2e-16 ***
+## MdnInc.trct -3.201e-06  1.399e-06  -2.288 0.022110 *  
+## UnemplRt    -2.510e+00  2.732e-01  -9.188  &lt; 2e-16 ***
+## VacRt       -1.220e+00  1.490e-01  -8.189 2.64e-16 ***
+## RentRt      -1.067e+00  8.311e-02 -12.834  &lt; 2e-16 ***
+## ColEduRt     1.144e+00  2.953e-01   3.874 0.000107 ***
+## GrEduRt      1.203e+00  3.899e-01   3.086 0.002031 ** 
+## PctWhite    -2.698e-01  5.657e-02  -4.769 1.85e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 34443  on 30617  degrees of freedom
+## Residual deviance: 33107  on 30608  degrees of freedom
+##   (364 observations deleted due to missingness)
+## AIC: 33127
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>summary((glm(QOZ~n.cde + n.prj + avg.prj.yr + ttl.amt.prj + avg.amt.prj + avg.amt.yr, data=d, family=binomial())))</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = QOZ ~ n.cde + n.prj + avg.prj.yr + ttl.amt.prj + 
+##     avg.amt.prj + avg.amt.yr, family = binomial(), data = d)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3822  -1.3266   0.9867   1.0102   2.4450  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  1.507e+00  3.128e-01   4.818 1.45e-06 ***
+## n.cde       -4.131e-01  1.067e-01  -3.870 0.000109 ***
+## n.prj       -1.030e-02  5.998e-02  -0.172 0.863638    
+## avg.prj.yr  -6.142e-01  3.042e-01  -2.019 0.043466 *  
+## ttl.amt.prj -1.011e-08  6.595e-09  -1.534 0.125143    
+## avg.amt.prj -3.206e-08  2.862e-08  -1.120 0.262627    
+## avg.amt.yr   3.409e-08  2.949e-08   1.156 0.247644    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 3757.1  on 2733  degrees of freedom
+## Residual deviance: 3639.6  on 2727  degrees of freedom
+##   (28248 observations deleted due to missingness)
+## AIC: 3653.6
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code>exp(coef(glm(QOZ~PovRt.trct, data=d, family=binomial()))) #Odds ratios</code></pre>
+<pre><code>## (Intercept)  PovRt.trct 
+##  7.10197153  0.04215104</code></pre>
+</div>
+</div>
+
+<!-- give the footer some space -->
+<br/>
+<br/>
+
+<footer id="site-footer">
+  <div id="footer1">
+  This website is a project for Adam Wilson's <a href="http://www.adamwilson.us/RDataScience"><i> Spatial Data Science (GEO503) </i></a>Course at the University at Buffalo
+  </div>
+  <div id="footer2">
+  <a rel="license" property="http://creativecommons.org/ns#license"
+  href="http://creativecommons.org/licenses/by/4.0/" ><img src="img/cc-by.svg" alt="cc-by"/></a> 
+  </div>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+---
+title: "An Analysis Federal Opportunity Zones & Low-income Communities"
+output: html_document
+---
+
+#Problem Statement
+##Background
+In 2017, the Trump Administration passed the Tax Cuts and Jobs Act, authorizing the establishment of new "Opportunity Zones" (OZ) -- offering a new type of tax-incentive to target private equity investments into distressed communities. Of the XXX low-income community (LIC) census tracts eligible, 8,700 8,700 were selected by state officials, and approved by the US Treasury.  This program purports to offer an unprecedented level of opportunity for new investment aimed at community and economic development, with an estimated $X Trillion in capital elligible for this type of tax-exemption. Social impact funds, community development financial institutions, and state and local agencies across the country are now mobilizing to attract private funding, and to green-light shovel ready development projects. However, with this new rush to reinvest and redevelopment are myriad concerns about how to manage new investment, how to prioritize community needs, and how to stave off negative effects associated with gentrification, displacement, and affordability. The Federal government has issued minimal guidance, and in the absence of and rules and regulations, many communities feel that the program may ultimately serve developers and investors, rather than the communities and people living in the OZ neighborhoods.
+##Objective
+The goal of this project is to (1) examine the spatial distribution of the designated OZ tract, (2) compare selected versus eligible but not selected tracts, and (3) assess the variation in the level of 'need', based on varying definitions of 'area median income', compared to Federal criteria used to classify LIC tracts, (4) evaluate the potential for investment based on prior social impact investments made through the New Markets Tax Credit (NMTC) program, and (5) classify and subset OZ tracts based on upward or downward trajectory in terms of recent demographic and economic change. OZ tracts were chosen by state officials, with minimal required selection critieria. Without knowing the exact critieria used in each state, this analysis serves to deescribe the ultimate outcome of those selection processes, to present an overview of these investment-eligible communities, and to consider some of the variables relevant to evaluating the potential impact of the OZ program.
+##Definitions
+  * Low-Income Community (LIC)
+  LIC census tracts have an individual poverty rate of 20% or more, AND median family income up to 80% percent of the area median (area = state or metro). [definitions established in the American Jobs Creation Act of 2004]
+  *Opportunity Zone (OZ)
+  Every state can designate up to 25% of its eligible census tracts
+  *Exception
+  5% of non-LIC tracts may be eligible if contiguous with a LIC designated OZ tract (LIC-OZ), AND median family income does not exceed 125% of the median family income of the contiguous LIC-OZ tract. 
+##Next Steps
+Exploring social impact investment
+  *Number of CDFIs, CDEs, CDCs opporating in the region?
+  *Number of impact investment funds?
+  *Indicators of development:
+    -workforce education/development, 
+    -workforce diversity, 
+    -neighborhood revitalization, 
+    -health and environment friendly, and
+    -job creation.
+  *Indicator of public investment:
+    -new bond issuance
+    -spending per capita
+
+#Analysis
+#0.Set-up
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+#1.Load libraries
+```{r load libs, message=F, warning=F, cache=T, results='hide'}
+
+#uncomment the next line in order to install missing packages
+#install.packages(c("tidyverse", "broom", "data.table", "purrr", "stringr", "skimr", "units", "sf", "maps", "albersusa", "viridis", "gridExtra", "ggthemes", "cowplot", "tableone", "ggpubr"))
+
+# data wrangling libs
+library(tidyverse)
+library(broom)
+library(data.table)
+library(purrr)
+library(stringr)
+
+# data analysis
+library(skimr)
+library(units)
+library(tableone)
+
+# spatial libs
+library(sf)
+library(maps)
+library(albersusa)
+
+# graphics/viz libs
+library(viridis)
+library(gridExtra)
+library(ggthemes)
+library(cowplot)
+library(ggpubr)
+
+```
+
+#2.Load cleaned data
+```{r 2a download + load csv data, message=F, warning=F, cache=T}
+
+# load OZ data frame (50 states + DC, territories exluded)
+ozones.51 <- readRDS("data/ozones_51.rds")
+
+# load US census tracts sf data frame
+tracts.sf <- readRDS("data/tracts_sf.rds")
+
+# load US counties sf data frame
+counties.sf <- readRDS("data/counties_sf.rds")
+
+# load US states sf data frame
+states.sf <- readRDS("data/states_sf.rds")
+
+# load nmtc tract data
+nmtc.tract <- readRDS("data/nmtc_tract.rds")
+
+# load tract census attributes
+us.trcts.acs.rt16 <- readRDS("data/us_trcts_acs_rt16.rds")
+
+# load county census attributes
+us.cnty.acs.rt16 <- readRDS("data/us_cnty_acs_rt16.rds")
+
+# load state census attributes
+us.st.acs.rt16 <- readRDS("data/us_st_acs_rt16.rds")
+
+```
+
+#3.Merge attribute data with spatial data
+```{r 3 merge attribute data, cache=T}
+
+# merge (left join) 'Opportunity Zones' to sf tracts dataframe ; merge NMTC data and ACS attributes to Ozone tracts sf df
+sfdf <- merge(tracts.sf, ozones.51[,-c("state","state_code")], by.x = "GEOID", by.y = "GEOID10", all.x) %>% # merge OZ designations to lower 48 tracts sf data frame
+  select(-c(variable,estimate,moe)) %>% 
+  merge(nmtc.tract, by="GEOID", all.x=T) %>% # merge NMTC data to tracts
+  merge(us.trcts.acs.rt16,by="GEOID", all.x=T) %>% # merge ACS varaibles (cleaned 2016 rates)
+  mutate(CountyFIPS=substr(GEOID,1,5)) %>% 
+  merge(us.cnty.acs.rt16[,c("GEOID","PovRt","MdnInc")], by.x="CountyFIPS",by.y="GEOID", all.x=T) %>% # merge country level variables to tracts
+  rename(PovRt.trct = PovRt.x) %>% 
+  rename(MdnInc.trct = MdnInc.x) %>% 
+  rename(PovRt.cnty = PovRt.y) %>% 
+  rename(MdnInc.cnty = MdnInc.y) %>% 
+  mutate(StateFIPS=substr(GEOID,1,2)) %>% 
+  merge(us.st.acs.rt16[,c("GEOID","PovRt","MdnInc")], by.x="StateFIPS",by.y="GEOID", all.x=T) %>% # merge state level variables to tracts
+  rename(PovRt.st = PovRt) %>% 
+  rename(MdnInc.st = MdnInc) %>% 
+  mutate(PovRatio.cnty = PovRt.trct/PovRt.cnty) %>% 
+  mutate(PovRatio.st = PovRt.trct/PovRt.st) %>% 
+  mutate(MdnIncRatio.cnty = MdnInc.trct/MdnInc.cnty) %>% 
+  mutate(MdnIncRatio.st = MdnInc.trct/MdnInc.st) %>% 
+  mutate(OZ = factor(ifelse(QOZ=="DESIGNATEDQOZ", "OZone", ifelse(TYPE=="LIC", "Non-OZ LIC", "Non-LIC"))))
+
+```
+
+#4.Descriptive analysis
+##4a.National and State Distribution
+```{r 4a national and state descriptive tables/charts, cache=T}
+
+# two-way table of eligibility and designation
+table(sfdf$QOZ,sfdf$TYPE) #counts
+prop.table(table(sfdf$QOZ,sfdf$TYPE)) #proportions
+
+# bar chart: state level distribution of tract designation/eligibility (sorted by % OZ)
+sfdf %>% 
+  st_set_geometry(NULL) %>% 
+  group_by(state) %>% 
+  summarise(n = n(), OZone = sum(OZ == "OZone")/n,LIC = sum(OZ == "Non-OZ LIC")/n,NonLIC = sum(OZ == "Non-LIC")/n) %>% 
+  mutate(state = factor(state, levels = state[order(OZone)])) %>% 
+  gather(key = "OZdesignation", value = "n.tracts", OZone, LIC, NonLIC) %>% 
+  ggplot(aes(x = state, y = n.tracts, fill = factor(OZdesignation, levels = c("NonLIC","LIC","OZone")))) + 
+  theme_bw() + geom_bar(stat = "identity") + 
+  ylab("% of state tracts") + 
+  labs(fill = "Census Tract\nEligibility/Designation") + 
+  scale_fill_manual(values=c("grey","blue","dark blue"))
+
+```                     
+
+##4b.Compare OZ and Non-OZ-LIC pt1
+```{r 4b Compare OZ and Non-OZ-LIC pt1, message=F, warning=F, cache=T}
+
+# select dataset: remove geometry (increase process speed), filter by LIC only, add area/density variables
+d <- sfdf %>% 
+  mutate(area = set_units(st_area(.),mi^2)) %>% 
+  st_set_geometry(NULL) %>% 
+  mutate(QOZ = as.factor(QOZ)) %>%  #set QOZ as factor 
+  filter(QOZ=="DESIGNATEDQOZ" | TYPE == "LIC") %>% #restrict to LIC (low-income communities == QOZ eligible)
+  mutate(OZ = factor(OZ)) %>% 
+  mutate(popdens = as.double(Pop/area)) %>% 
+  mutate(prjdens = as.double(n.prj/area)) %>% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+#table one, compare all variables between OZ and Non-OZ-LIC (ChiSquared tests are used for categorical variables; One-way ANOVA tests are used for continuous variables)
+
+# demographic mix
+tableOne1 <- CreateTableOne(strata = "OZ", vars = c("Pop","popdens","PovRt.trct","MdnInc.trct","UnemplRt","VacRt","RentRt","GrEduRt","ColEduRt","PctWhite"), data = d)
+tableOne1
+
+# prior investment
+tableOne2 <- CreateTableOne(strata = "OZ", vars = c("metro","n.cde","n.prj","avg.prj.yr","ttl.amt.prj","avg.amt.prj","avg.amt.yr","CDE","NRE","RE","SPE"), data = d)
+tableOne2
+
+# distressed area criterion
+tableOne3 <- CreateTableOne(strata = "OZ", vars = c("PovRatio.cnty","PovRatio.st","MdnIncRatio.cnty","MdnIncRatio.st","prjdens","invdens"), data = d)
+tableOne3
+
+# compare distribution of Poverty Rate between OZ and Non-OZ LIC
+d %>% ggplot(aes(PovRt.trct, color = OZ)) + 
+  scale_color_manual(values=c("#E69F00", "#56B4E9"), 
+                       name="Census Tract\nDesignation",
+                       breaks=c("OZone","Non-OZ LIC"),
+                       labels=c("Designated OZone", "Non-OZone LIC")) +
+  geom_density(alpha = 0.4) + 
+  geom_vline(data=data.frame(d[!is.na(d$PovRt.trct),] %>% 
+                               group_by(OZ) %>% 
+                               summarise(grp.mean=mean(PovRt.trct))), 
+    aes(xintercept=grp.mean, color=OZ), 
+    linetype="dashed") +
+    xlab("2016 Poverty Rate") 
+  
+```                     
+
+##4c.Compare OZ and Non-OZ-LIC pt2
+```{r 4c Compare OZ and Non-OZ-LIC pt2,  message=F, warning=F, cache=T}
+
+# review distribution of variables
+#d.skim <- skim(d[23:39])
+
+# plot continuous variables x bin/cat vars >> box plots (statistically significant vars X OZ class)
+
+p1 <- ggboxplot(d, x = "OZ", y = "PovRt.trct",
+                 color = "OZ", palette = "jco")
+p2 <- ggboxplot(d, x = "OZ", y = "UnemplRt",
+                 color = "OZ", palette = "jco")
+p3 <- ggboxplot(d, x = "OZ", y = "VacRt",
+                 color = "OZ", palette = "jco")
+p4 <- ggboxplot(d, x = "OZ", y = "GrEduRt",
+                 color = "OZ", palette = "jco")
+p5 <- ggboxplot(d, x = "OZ", y = "ColEduRt",
+                 color = "OZ", palette = "jco")
+p6 <- ggboxplot(d, x = "OZ", y = "PctWhite",
+                 color = "OZ", palette = "jco")
+
+ggarrange(p1,p2,p3,p4,p5,p6 + rremove("x.text"), 
+          labels = c("A", "B", "C", "D", "E", "F"),
+          ncol = 3, nrow = 2)
+
+```                     
+
+##5.Map data
+```{r 5 generate maps, cache=T, eval=T}
+
+noaxis <- theme(
+  axis.title.x=element_blank(),
+  axis.text.x=element_blank(),
+  axis.ticks.x=element_blank(),
+  axis.title.y=element_blank(),
+  axis.text.y=element_blank(),
+  axis.ticks.y=element_blank(),
+  panel.background = element_blank(),
+  legend.title = element_text(size=8),
+  legend.text = element_text(size=8)
+  )
+
+mkmaps <- function(x,y,z,w){
+x %>%
+  filter(state %in% z) %>% 
+  group_by(eval(parse(text=w))) %>% 
+  summarise(value = first(eval(parse(text=y)))) %>% 
+  ggplot(aes(fill = value)) +
+  geom_sf(color = NA, lwd=.5) +
+  labs(fill=y) +
+  geom_sf(data = st_geometry(states.sf[states.sf$state %in% z,]), fill = "transparent", color = "white", lwd=.5) +
+  geom_sf(data = st_geometry(x[(x$state %in% z) & x$OZ=="OZone",]), fill = "transparent", color = "orange", lwd=.5) +
+  noaxis %>%
+    return()
+}
+
+#eval(parse(text=y))
+
+s <- sfdf %>% 
+  mutate(area = set_units(st_area(.),mi^2)) %>% 
+  mutate(QOZ = as.factor(QOZ)) %>%  #set QOZ as factor 
+  mutate(popdens = as.double(Pop/area)) %>% 
+  mutate(prjdens = as.double(n.prj/area)) %>% 
+  mutate(invdens = as.double(ttl.amt.prj/area))
+
+tract.qoz.al <- s %>% mkmaps('TYPE',c("AL"),"GEOID")
+tract.qoz.pa <- s %>% mkmaps('TYPE',c("PA"),"GEOID")
+tract.qoz.ny <- s %>% mkmaps('TYPE',c("NY"),"GEOID")
+
+cowplot::plot_grid(
+  tract.qoz.al,
+  tract.qoz.pa,
+  tract.qoz.ny,
+  nrow = 3
+)
+
+tract.povrt.map <- s %>% mkmaps('PovRt.trct',c("AL"),'GEOID')
+county.povrt.map <- s %>% mkmaps('PovRt.cnty',c("AL"),'CountyFIPS')
+state.povrt.map <- s %>% mkmaps('PovRt.st',c("AL","MS"),'StateFIPS')
+
+cowplot::plot_grid(
+  tract.povrt.map,
+  county.povrt.map,
+  state.povrt.map,
+  nrow = 3
+)
+
+```
+
+
+##6.Regression Analysis
+```{r}
+#outcomes... classification as QOZ
+#2-sample tests, compare LIC/QOZ
+chisq.test(table(d$QOZ, d$PovRt.trct)) 
+summary((glm(QOZ~Pop + PovRt.trct + MdnInc.trct + UnemplRt + VacRt + RentRt + ColEduRt + GrEduRt + PctWhite, data=d, family=binomial())))
+summary((glm(QOZ~n.cde + n.prj + avg.prj.yr + ttl.amt.prj + avg.amt.prj + avg.amt.yr, data=d, family=binomial())))
+exp(coef(glm(QOZ~PovRt.trct, data=d, family=binomial()))) #Odds ratios
+
+```
+

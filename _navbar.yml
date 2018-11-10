@@ -7,10 +7,14 @@ left:
     menu:
       - text: "Proposal"
         href: proposal.html
-      - text: "First Draft"
-        href: draft.html
-      - text: "Final Project"
-        href: project.html
+      - text: "Processing(draft)"
+        href: draft_pt1.html
+      - text: "Analysis(draft)"
+        href: draft_pt2.html
+      - text: "Processing(final)"
+        href: final_pt1.html
+      - text: "Analysis(final)"
+        href: final_pt2.html
   - text: "Data"
     href: data.html
   - text: "Resources"
