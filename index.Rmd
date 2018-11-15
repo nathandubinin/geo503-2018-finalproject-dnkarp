@@ -2,5 +2,5 @@
 title: "GEO 503 Final Project | Fall 2018"
 output: html_document
 ---
-
+ 
 #[First Draft](https://adamwilsonlabedu.github.io/geo503-2018-finalproject-dnkarp/draft_pt2.html)
